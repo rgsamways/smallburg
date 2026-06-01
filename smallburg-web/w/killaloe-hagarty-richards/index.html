@@ -543,9 +543,9 @@
           <div class="claim-block-label">Activate this workspace</div>
           <p>This workspace is reserved for <strong>Municipality of Killaloe, Hagarty and Richards</strong> staff and community members. Sign in with your <strong>@khrtownship.ca</strong> email address to activate it.</p>
           <p>Residents and community workers can join with a personal email and postal code <strong>K0J 2A0</strong>.</p>
-          <input class="claim-input" type="email" placeholder="your@killaloe-hagarty-richards.ca or personal email">
-          <input class="claim-input" type="text" placeholder="Postal code (residents only)">
-          <button class="claim-btn" onclick="this.textContent='Request sent — we\'ll be in touch'; this.style.background='var(--teal)'">Request early access →</button>
+          <input id="claim-email" class="claim-input" type="email" placeholder="your@killaloe-hagarty-richards.ca or personal email">
+          <input id="claim-postal" class="claim-input" type="text" placeholder="Postal code (residents only)">
+          <button class="claim-btn" id="claim-btn" onclick="submitClaim()">Request early access →</button>
           <div class="claim-note">hello@smallburg.ca · smallburg.ca · Maynooth, ON K0L 2S0</div>
         </div>
       </div>
@@ -688,8 +688,8 @@
       </div>
       <div class="gap-item">
         <div>
-          <h4>Ottawa Valley corridor compliance data doesn't cross municipal lines</h4>
-          <p>Contractors operating across Renfrew County townships — including Municipality of Killaloe, Hagarty and Richards — have no unified record of which sites they've inspected, leaving gaps at every municipal boundary.</p>
+          <h4>Ottawa Valley contractor records don't cross municipal lines</h4>
+          <p>A trades inspector working across Renfrew County — through Municipality of Killaloe, Hagarty and Richards, Bonnechere Valley, Madawaska Valley, Killaloe — has no portable compliance record. Every township is a fresh start. The same gap gets missed at every boundary.</p>
         </div>
         <div class="gap-tag">TapLog</div>
       </div>
@@ -731,10 +731,10 @@
       <div class="task">
         <div class="task-num">04</div>
         <div>
-          <h4>Activate the Algonquin corridor compliance link</h4>
-          <p>Connect your workspace to the Ottawa Valley corridor network. Contractors and inspectors working between Renfrew County townships will have a single record that follows them.</p>
+          <h4>Identify Renfrew County land registry contact</h4>
+          <p>Research who holds zoning and variance records for Municipality of Killaloe, Hagarty and Richards at the county level. What format are they in? Are there filing cabinets involved? This is the Parcel reconnaissance task for Municipality of Killaloe, Hagarty and Richards.</p>
         </div>
-        <div class="task-role">DIG-GEN</div>
+        <div class="task-role">DIG-LU</div>
       </div>
     </div>
   </section>
@@ -769,6 +769,49 @@
     entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
   }, { threshold: 0.08 });
   document.querySelectorAll('.fade-up').forEach(el => obs.observe(el));
+
+  async function submitClaim() {
+    const email = document.getElementById('claim-email').value.trim();
+    const postal = document.getElementById('claim-postal').value.trim();
+    const btn = document.getElementById('claim-btn');
+
+    if (!email && !postal) {
+      btn.textContent = 'Enter an email or postal code';
+      btn.style.background = 'var(--coral)';
+      setTimeout(() => { btn.textContent = 'Request early access →'; btn.style.background = ''; }, 2500);
+      return;
+    }
+
+    btn.textContent = 'Sending...';
+    btn.disabled = true;
+
+    try {
+      const res = await fetch('https://smallburg.ca/api/claim', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email,
+          postal,
+          municipality: 'Municipality of Killaloe, Hagarty and Richards',
+          workspace_id: 'ws_0024',
+          slug: 'killaloe-hagarty-richards',
+        }),
+      });
+
+      if (res.ok) {
+        btn.textContent = 'Request sent — we\'ll be in touch';
+        btn.style.background = 'var(--teal)';
+        document.getElementById('claim-email').disabled = true;
+        document.getElementById('claim-postal').disabled = true;
+      } else {
+        throw new Error('Server error');
+      }
+    } catch (e) {
+      btn.textContent = 'Something went wrong — email hello@smallburg.ca';
+      btn.style.background = 'var(--coral)';
+      btn.disabled = false;
+    }
+  }
 </script>
 
 </body>

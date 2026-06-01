@@ -543,9 +543,9 @@
           <div class="claim-block-label">Activate this workspace</div>
           <p>This workspace is reserved for <strong>Township of Muskoka Lakes</strong> staff and community members. Sign in with your <strong>@muskokalakes.ca</strong> email address to activate it.</p>
           <p>Residents and community workers can join with a personal email and postal code <strong>P0B 1M0</strong>.</p>
-          <input class="claim-input" type="email" placeholder="your@muskokalakes.ca or personal email">
-          <input class="claim-input" type="text" placeholder="Postal code (residents only)">
-          <button class="claim-btn" onclick="this.textContent='Request sent — we\'ll be in touch'; this.style.background='var(--teal)'">Request early access →</button>
+          <input id="claim-email" class="claim-input" type="email" placeholder="your@muskokalakes.ca or personal email">
+          <input id="claim-postal" class="claim-input" type="text" placeholder="Postal code (residents only)">
+          <button class="claim-btn" id="claim-btn" onclick="submitClaim()">Request early access →</button>
           <div class="claim-note">hello@smallburg.ca · smallburg.ca · Maynooth, ON K0L 2S0</div>
         </div>
       </div>
@@ -761,6 +761,49 @@
     entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
   }, { threshold: 0.08 });
   document.querySelectorAll('.fade-up').forEach(el => obs.observe(el));
+
+  async function submitClaim() {
+    const email = document.getElementById('claim-email').value.trim();
+    const postal = document.getElementById('claim-postal').value.trim();
+    const btn = document.getElementById('claim-btn');
+
+    if (!email && !postal) {
+      btn.textContent = 'Enter an email or postal code';
+      btn.style.background = 'var(--coral)';
+      setTimeout(() => { btn.textContent = 'Request early access →'; btn.style.background = ''; }, 2500);
+      return;
+    }
+
+    btn.textContent = 'Sending...';
+    btn.disabled = true;
+
+    try {
+      const res = await fetch('https://smallburg.ca/api/claim', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email,
+          postal,
+          municipality: 'Township of Muskoka Lakes',
+          workspace_id: 'ws_0002',
+          slug: 'muskoka-lakes',
+        }),
+      });
+
+      if (res.ok) {
+        btn.textContent = 'Request sent — we\'ll be in touch';
+        btn.style.background = 'var(--teal)';
+        document.getElementById('claim-email').disabled = true;
+        document.getElementById('claim-postal').disabled = true;
+      } else {
+        throw new Error('Server error');
+      }
+    } catch (e) {
+      btn.textContent = 'Something went wrong — email hello@smallburg.ca';
+      btn.style.background = 'var(--coral)';
+      btn.disabled = false;
+    }
+  }
 </script>
 
 </body>

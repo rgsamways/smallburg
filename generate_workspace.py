@@ -657,6 +657,11 @@ def get_specific_gaps(m):
             "body": f"Land use decisions in {name} depend on zoning records held separately by each of the four Haliburton County municipalities in inconsistent formats. No consolidated view exists.",
             "tag": "Parcel",
         })
+        gaps.append({
+            "title": "Contractor compliance records don't follow inspectors across municipal lines",
+            "body": f"An inspector who works across {county} County townships carries no portable record of what they've inspected. Each municipality is a silo. The same building could go uninspected in one township while the next township over has three visits on file.",
+            "tag": "TapLog",
+        })
     if "uranium" in known_for or "mining" in known_for:
         gaps.append({
             "title": "Historic extraction site records are incomplete",
@@ -665,8 +670,8 @@ def get_specific_gaps(m):
         })
     if county in ("Renfrew",):
         gaps.append({
-            "title": "Ottawa Valley corridor compliance data doesn't cross municipal lines",
-            "body": f"Contractors operating across Renfrew County townships — including {name} — have no unified record of which sites they've inspected, leaving gaps at every municipal boundary.",
+            "title": "Ottawa Valley contractor records don't cross municipal lines",
+            "body": f"A trades inspector working across Renfrew County — through {name}, Bonnechere Valley, Madawaska Valley, Killaloe — has no portable compliance record. Every township is a fresh start. The same gap gets missed at every boundary.",
             "tag": "TapLog",
         })
     if county in ("Frontenac",):
@@ -733,16 +738,16 @@ def get_commons_tasks(m):
     elif county in ("Haliburton", "Frontenac", "Lennox and Addington"):
         tasks.append({
             "number": "04",
-            "title": "Connect to the county workspace network",
-            "body": f"Link your {county} workspace to adjacent municipalities. When a contractor inspects a building in your township, that record becomes visible to the next municipality they work in.",
-            "role": "DIG-GEN",
+            "title": f"Identify {county} County land registry contact",
+            "body": f"Research who holds zoning and variance records for {county} County. What format are they in? Is there a filing cabinet involved? What's the access process? This is the Parcel reconnaissance task.",
+            "role": "DIG-LU",
         })
     elif county in ("Renfrew",):
         tasks.append({
             "number": "04",
-            "title": "Activate the Algonquin corridor compliance link",
-            "body": "Connect your workspace to the Ottawa Valley corridor network. Contractors and inspectors working between Renfrew County townships will have a single record that follows them.",
-            "role": "DIG-GEN",
+            "title": "Identify Renfrew County land registry contact",
+            "body": f"Research who holds zoning and variance records for {m.get('name', '')} at the county level. What format are they in? Are there filing cabinets involved? This is the Parcel reconnaissance task for {m.get('name', '')}.",
+            "role": "DIG-LU",
         })
 
     return [dict(t, body=t["body"].replace("{name}", m["name"])) for t in tasks]
@@ -1475,9 +1480,9 @@ def generate_page(m):
           <div class="claim-block-label">Activate this workspace</div>
           <p>This workspace is reserved for <strong>{name}</strong> staff and community members. Sign in with your <strong>{email_domain}</strong> email address to activate it.</p>
           <p>{postal_note}</p>
-          <input class="claim-input" type="email" placeholder="your@{website} or personal email">
-          <input class="claim-input" type="text" placeholder="Postal code (residents only)">
-          <button class="claim-btn" onclick="this.textContent='Request sent — we\\'ll be in touch'; this.style.background='var(--teal)'">Request early access →</button>
+          <input id="claim-email" class="claim-input" type="email" placeholder="your@{website} or personal email">
+          <input id="claim-postal" class="claim-input" type="text" placeholder="Postal code (residents only)">
+          <button class="claim-btn" id="claim-btn" onclick="submitClaim()">Request early access →</button>
           <div class="claim-note">hello@smallburg.ca · smallburg.ca · Maynooth, ON K0L 2S0</div>
         </div>
       </div>
@@ -1611,6 +1616,49 @@ def generate_page(m):
     entries.forEach(e => {{ if (e.isIntersecting) e.target.classList.add('visible'); }});
   }}, {{ threshold: 0.08 }});
   document.querySelectorAll('.fade-up').forEach(el => obs.observe(el));
+
+  async function submitClaim() {{
+    const email = document.getElementById('claim-email').value.trim();
+    const postal = document.getElementById('claim-postal').value.trim();
+    const btn = document.getElementById('claim-btn');
+
+    if (!email && !postal) {{
+      btn.textContent = 'Enter an email or postal code';
+      btn.style.background = 'var(--coral)';
+      setTimeout(() => {{ btn.textContent = 'Request early access →'; btn.style.background = ''; }}, 2500);
+      return;
+    }}
+
+    btn.textContent = 'Sending...';
+    btn.disabled = true;
+
+    try {{
+      const res = await fetch('https://smallburg.ca/api/claim', {{
+        method: 'POST',
+        headers: {{ 'Content-Type': 'application/json' }},
+        body: JSON.stringify({{
+          email,
+          postal,
+          municipality: '{name}',
+          workspace_id: '{workspace_id}',
+          slug: '{slug}',
+        }}),
+      }});
+
+      if (res.ok) {{
+        btn.textContent = 'Request sent — we\\'ll be in touch';
+        btn.style.background = 'var(--teal)';
+        document.getElementById('claim-email').disabled = true;
+        document.getElementById('claim-postal').disabled = true;
+      }} else {{
+        throw new Error('Server error');
+      }}
+    }} catch (e) {{
+      btn.textContent = 'Something went wrong — email hello@smallburg.ca';
+      btn.style.background = 'var(--coral)';
+      btn.disabled = false;
+    }}
+  }}
 </script>
 
 </body>
