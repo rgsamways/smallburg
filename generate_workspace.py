@@ -626,19 +626,19 @@ MUNICIPALITIES_LIVE = [
 
 UNIVERSAL_GAPS = [
     {
-        "icon": "⬡",
         "title": "No verified building compliance record",
         "body": "Fire safety equipment, fall protection, and structural assets across {name} have never been systematically documented in a tamper-evident digital record. When an incident occurs, there is no pre-loss baseline.",
+        "tag": "TapLog",
     },
     {
-        "icon": "◈",
         "title": "No local career pathway in regulated trades",
         "body": "Young people in {county} who want to enter inspection, safety compliance, or regulated trades have no structured pathway into those roles that connects local employment with credentialled work.",
+        "tag": "Commons · Muster",
     },
     {
-        "icon": "△",
         "title": "Institutional knowledge at retirement risk",
         "body": "The people who know where the records are, which buildings have outstanding issues, and how the informal compliance network works are within a decade of retirement. When they leave, that knowledge leaves too.",
+        "tag": "Commons · Parcel",
     },
 ]
 
@@ -653,45 +653,45 @@ def get_specific_gaps(m):
 
     if county in ("Haliburton",):
         gaps.append({
-            "icon": "◇",
             "title": "Haliburton County zoning data is fragmented across four municipalities",
             "body": f"Land use decisions in {name} depend on zoning records held separately by each of the four Haliburton County municipalities in inconsistent formats. No consolidated view exists.",
+            "tag": "Parcel",
         })
     if "uranium" in known_for or "mining" in known_for:
         gaps.append({
-            "icon": "◈",
             "title": "Historic extraction site records are incomplete",
             "body": f"Legacy mining operations in the {name} area produced infrastructure and environmental obligations that are inadequately documented in current municipal records.",
+            "tag": "TapLog · Parcel",
         })
     if county in ("Renfrew",):
         gaps.append({
-            "icon": "◇",
             "title": "Ottawa Valley corridor compliance data doesn't cross municipal lines",
             "body": f"Contractors operating across Renfrew County townships — including {name} — have no unified record of which sites they've inspected, leaving gaps at every municipal boundary.",
+            "tag": "TapLog",
         })
     if county in ("Frontenac",):
         gaps.append({
-            "icon": "◇",
             "title": "County of Frontenac asset records are siloed by lower-tier municipality",
             "body": f"The Canadian Shield cottage economy in {name} generates significant seasonal infrastructure demand with no unified compliance baseline across the Frontenac municipalities.",
+            "tag": "TapLog · Parcel",
         })
     if county in ("Cochrane", "Kenora", "Thunder Bay"):
         gaps.append({
-            "icon": "◇",
             "title": "Remote access and low inspector density create compliance blind spots",
             "body": f"{name}'s geographic isolation means inspection cycles are long and irregular. Assets go years between documented compliance checks with no digital record of the gap.",
+            "tag": "TapLog",
         })
     if rurality == "COTTAGE":
         gaps.append({
-            "icon": "◇",
             "title": "Seasonal population surge overwhelms year-round compliance infrastructure",
             "body": f"{name}'s permanent population of under 5,000 swells dramatically each summer. Fire safety and structural assets serving peak-season capacity have never been benchmarked against that load.",
+            "tag": "TapLog",
         })
     if county in ("Nipissing", "Parry Sound", "Algoma"):
         gaps.append({
-            "icon": "◇",
             "title": "Northern Ontario resource transition leaves compliance records orphaned",
             "body": f"As industrial employers in {county} have downsized or closed, the buildings and assets they maintained have passed to new operators — often without transferring the compliance history.",
+            "tag": "TapLog · Farpost",
         })
 
     return gaps[:2]  # cap at 2 specific gaps
@@ -704,16 +704,19 @@ def get_commons_tasks(m):
             "number": "01",
             "title": "Register your first asset",
             "body": "Attach an NFC tag to any inspectable asset — fire extinguisher, fall arrest anchor, exit sign. Scan it with TapLog to create the first entry in {name}'s compliance record.",
+            "role": "DIG-FS",
         },
         {
             "number": "02",
             "title": "Map your building inventory",
             "body": "Upload a list of buildings under municipal jurisdiction. TapLog will generate a workspace asset map — the first complete picture of what exists and what doesn't have a compliance record yet.",
+            "role": "DIG-GEN",
         },
         {
             "number": "03",
             "title": "Invite your first inspector",
             "body": "Add a certified inspector to your workspace. Every tap they complete in {name} becomes a verified, timestamped record tied to this address.",
+            "role": "DIG-GEN",
         },
     ]
 
@@ -725,18 +728,21 @@ def get_commons_tasks(m):
             "number": "04",
             "title": "Flag legacy extraction sites",
             "body": "Mark historic mine sites, headframes, and industrial properties on the workspace map. Flag them for priority first inspection to establish a pre-development compliance baseline.",
+            "role": "DIG-LU",
         })
     elif county in ("Haliburton", "Frontenac", "Lennox and Addington"):
         tasks.append({
             "number": "04",
             "title": "Connect to the county workspace network",
             "body": f"Link your {county} workspace to adjacent municipalities. When a contractor inspects a building in your township, that record becomes visible to the next municipality they work in.",
+            "role": "DIG-GEN",
         })
     elif county in ("Renfrew",):
         tasks.append({
             "number": "04",
             "title": "Activate the Algonquin corridor compliance link",
             "body": "Connect your workspace to the Ottawa Valley corridor network. Contractors and inspectors working between Renfrew County townships will have a single record that follows them.",
+            "role": "DIG-GEN",
         })
 
     return [dict(t, body=t["body"].replace("{name}", m["name"])) for t in tasks]
@@ -746,65 +752,107 @@ def get_commons_tasks(m):
 # Community profile cards
 # ---------------------------------------------------------------------------
 
+# Tag colours cycle through the Bancroft palette
+TAG_COLORS = ["amber", "teal", "purple", "coral", "green", "teal"]
+
 def get_profile_cards(m):
-    """Return 6 community profile card dicts."""
+    """Return 6 community profile card dicts with tag/title/body matching Bancroft style."""
     pop = m["population"]
     county = m["county"]
     rurality = m["rurality"]
     known_for = m.get("known_for", "")
+    name = m.get("name", "")
+    notes = m.get("notes", "")
 
-    rurality_label = {
-        "RURAL": "Rural township",
-        "REMOTE": "Remote community",
-        "COTTAGE": "Cottage country",
-    }.get(rurality, "Rural community")
+    rurality_desc = {
+        "RURAL": "Rural municipality with a permanent year-round population. Service centre for surrounding townships.",
+        "REMOTE": "Remote northern community. Geographic isolation shapes every aspect of service delivery and workforce.",
+        "COTTAGE": "Seasonal cottage economy. Permanent population expands dramatically each summer with significant infrastructure implications.",
+    }.get(rurality, "Rural Ontario community.")
 
     cards = [
-        {"label": "Population", "value": f"{pop:,}", "sub": f"{county} County"},
-        {"label": "Community type", "value": rurality_label, "sub": "Ontario classification"},
-        {"label": "Known for", "value": known_for.split(",")[0].strip().title(), "sub": "Primary identity"},
-        {"label": "Platform status", "value": "Workspace reserved", "sub": "Awaiting activation"},
-        {"label": "Asset records", "value": "0 on file", "sub": "No compliance baseline"},
-        {"label": "Inspector network", "value": "Not yet established", "sub": "Workspace dormant"},
+        {
+            "tag": "Economy",
+            "color": "amber",
+            "title": f"{county} County service community",
+            "body": f"Population {pop:,} with a service catchment that extends well beyond municipal boundaries. {county} County context shapes the local economic base — trades, services, and seasonal activity.",
+        },
+        {
+            "tag": "Known for",
+            "color": "teal",
+            "title": known_for.split(",")[0].strip(),
+            "body": f"{known_for}.",
+        },
+        {
+            "tag": "Community type",
+            "color": "purple",
+            "title": rurality.title().replace("_", " ") + " community",
+            "body": rurality_desc,
+        },
+        {
+            "tag": "Compliance",
+            "color": "coral",
+            "title": "No verified asset record on file",
+            "body": f"Zero TapLog records exist for {name}. Fire safety assets, fall protection equipment, and regulated infrastructure have never been systematically documented in a tamper-evident digital system.",
+        },
+        {
+            "tag": "Workforce",
+            "color": "green",
+            "title": "Inspector network not yet established",
+            "body": f"No certified inspectors are connected to the {name} workspace. The compliance baseline cannot be built until the first inspector is onboarded and begins tagging assets.",
+        },
+        {
+            "tag": "Region",
+            "color": "teal",
+            "title": f"Part of {county} County",
+            "body": f"{name} operates within {county} County's administrative and service framework. Neighbouring municipalities share contractors, inspectors, and compliance obligations across municipal lines.",
+        },
     ]
     return cards
 
 
 # ---------------------------------------------------------------------------
-# HTML template
+# HTML render helpers
 # ---------------------------------------------------------------------------
-
-def render_gap(gap, name):
-    body = gap["body"].replace("{name}", name)
-    return f"""
-        <div class="gap-item">
-          <span class="gap-icon">{gap["icon"]}</span>
-          <div class="gap-content">
-            <div class="gap-title">{gap["title"]}</div>
-            <div class="gap-body">{body}</div>
-          </div>
-        </div>"""
-
-
-def render_task(task):
-    return f"""
-        <div class="task-item">
-          <div class="task-number">{task["number"]}</div>
-          <div class="task-content">
-            <div class="task-title">{task["title"]}</div>
-            <div class="task-body">{task["body"]}</div>
-          </div>
-        </div>"""
-
 
 def render_profile_card(card):
     return f"""
-          <div class="profile-card">
-            <div class="profile-label">{card["label"]}</div>
-            <div class="profile-value">{card["value"]}</div>
-            <div class="profile-sub">{card["sub"]}</div>
-          </div>"""
+      <div class="profile-card">
+        <div class="profile-card-tag tag-{card['color']}">{card['tag']}</div>
+        <h3>{card['title']}</h3>
+        <p>{card['body']}</p>
+      </div>"""
 
+
+def render_gap(gap, name):
+    body = gap["body"].replace("{name}", name)
+    tag = gap.get("tag", "TapLog")
+    return f"""
+      <div class="gap-item">
+        <div>
+          <h4>{gap["title"]}</h4>
+          <p>{body}</p>
+        </div>
+        <div class="gap-tag">{tag}</div>
+      </div>"""
+
+
+def render_task(task):
+    role = task.get("role", "DIG-GEN")
+    return f"""
+      <div class="task">
+        <div class="task-num">{task["number"]}</div>
+        <div>
+          <h4>{task["title"]}</h4>
+          <p>{task["body"]}</p>
+        </div>
+        <div class="task-role">{role}</div>
+      </div>"""
+
+
+# ---------------------------------------------------------------------------
+# HTML template — matches Bancroft design exactly
+# ---------------------------------------------------------------------------
 
 def generate_page(m):
     name = m["name"]
@@ -818,837 +866,752 @@ def generate_page(m):
     email_domain = m.get("email_domain", "")
     website = m.get("website", "")
     mayor_title = "Reeve" if "reeve" in (m.get("notes") or "").lower() else "Mayor"
-    mayor_name = m.get("mayor_name") or "—"
-    cao_name = m.get("cao_name") or "—"
+    mayor_name = m.get("mayor_name") or "not yet researched"
+    cao_name = m.get("cao_name") or "not yet researched"
     cao_email = m.get("cao_email") or ""
     priority = m.get("priority", "P2")
     known_for = m.get("known_for", "")
     hold = m.get("hold", False)
     verify = m.get("verify", False)
 
-    # Generate gaps
+
+    # Generate content
     all_gaps = UNIVERSAL_GAPS + get_specific_gaps(m)
     gaps_html = "".join(render_gap(g, name) for g in all_gaps)
-
-    # Generate tasks
     tasks_html = "".join(render_task(t) for t in get_commons_tasks(m))
-
-    # Generate profile cards
     cards_html = "".join(render_profile_card(c) for c in get_profile_cards(m))
 
-    # Status badge
+    # Nav status
     if m.get("page_live"):
-        status_badge = '<span class="badge badge-live">● live</span>'
-        status_text = "active"
+        nav_status = f"workspace {workspace_id} · active"
     elif hold:
-        status_badge = '<span class="badge badge-hold">◌ hold</span>'
-        status_text = "hold"
+        nav_status = f"workspace {workspace_id} · hold"
     elif verify:
-        status_badge = '<span class="badge badge-verify">⚠ verify</span>'
-        status_text = "verify"
+        nav_status = f"workspace {workspace_id} · verify"
     else:
-        status_badge = '<span class="badge badge-dormant">○ dormant</span>'
-        status_text = "dormant · awaiting activation"
+        nav_status = f"workspace {workspace_id} · dormant · awaiting activation"
 
-    # CAO contact line
-    if cao_email:
-        cao_contact = f'<a href="mailto:{cao_email}" class="contact-link">{cao_email}</a>'
+    # Hero desc — build from known_for and county
+    name_short = name.replace("Municipality of ", "").replace("Township of ", "").replace("Town of ", "").replace("City of ", "")
+    hero_desc = f"{known_for.split(',')[0].strip()}. {county} County. Population {population:,} — this workspace was built for you before you arrived. It knows your community. It's waiting to be activated."
+
+    # Claim block postal note
+    postal_note = f"Residents and community workers can join with a personal email and postal code <strong>{postal}</strong>."
+
+    # CTA email
+    cta_email = cao_email if cao_email else "hello@smallburg.ca"
+    cta_subject = f"{name_short} workspace — early access request"
+
+    # Gap section heading — vary by county
+    if county in ("Cochrane", "Kenora", "Thunder Bay"):
+        gap_heading = f"What {name_short} needs<br><em>right now.</em>"
+    elif county in ("Haliburton", "Frontenac", "Lennox and Addington"):
+        gap_heading = f"The gaps this platform<br><em>was built to close.</em>"
     else:
-        cao_contact = "<span>Contact not yet researched</span>"
+        gap_heading = f"What {name_short} is missing<br><em>and why it matters.</em>"
+
+    # Module color classes matching Bancroft
+    module_colors = ["teal", "amber", "purple", "coral", "coral", "gray"]
+    module_statuses = [
+        ("Ready to connect", "status-ready"),
+        ("Dormant", "status-dormant"),
+        ("Dormant", "status-dormant"),
+        ("Coming soon", "status-dormant"),
+        ("Coming soon", "status-dormant"),
+        ("Coming soon", "status-dormant"),
+    ]
+
+    # Name split for h1: "Town of\nBancroft" style
+    name_parts = name.split(" ", 2)
+    if len(name_parts) >= 3:
+        h1_top = " ".join(name_parts[:2])
+        h1_em = name_parts[2]
+    else:
+        h1_top = ""
+        h1_em = name
 
     html = f"""<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>{name} — Smallburg Workspace</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,400&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
-  <style>
-    :root {{
-      --amber: #c8a96e;
-      --amber-dim: rgba(200, 169, 110, 0.15);
-      --amber-mid: rgba(200, 169, 110, 0.35);
-      --bg: #0d0d0b;
-      --bg-card: #131310;
-      --bg-card2: #171714;
-      --text: #e8e4dc;
-      --text-dim: #8a857a;
-      --text-mid: #b5b0a5;
-      --border: rgba(200, 169, 110, 0.18);
-      --border-faint: rgba(255,255,255,0.06);
-      --mono: 'DM Mono', monospace;
-      --sans: 'DM Sans', sans-serif;
-      --serif: 'Playfair Display', serif;
-    }}
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{name} — Smallburg Workspace</title>
+<meta name="description" content="Smallburg community workspace for {name}, Ontario. Pre-built infrastructure for local compliance, workforce, and community services.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+<style>
+  :root {{
+    --ground: #0f0e0b;
+    --ground-2: #181610;
+    --ground-3: #221f18;
+    --line: #2e2b22;
+    --line-2: #3d3928;
+    --warm: #c8a96e;
+    --warm-dim: #7a6540;
+    --warm-bright: #e8c887;
+    --text: #e8e4d8;
+    --text-dim: #8a8474;
+    --text-muted: #4a4640;
+    --teal: #4a9e82;
+    --teal-dim: #2a5e4e;
+    --purple: #7a6eb8;
+    --purple-dim: #3d3770;
+    --coral: #c06848;
+    --coral-dim: #6b3520;
+    --amber: #c89040;
+    --amber-dim: #7a5518;
+    --green: #5a9e48;
+    --green-dim: #2d5422;
+  }}
 
-    * {{ box-sizing: border-box; margin: 0; padding: 0; }}
+  *, *::before, *::after {{ box-sizing: border-box; margin: 0; padding: 0; }}
+  html {{ scroll-behavior: smooth; }}
 
-    body {{
-      background-color: var(--bg);
-      color: var(--text);
-      font-family: var(--sans);
-      min-height: 100vh;
-      position: relative;
-      overflow-x: hidden;
-    }}
+  body {{
+    background: var(--ground);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    line-height: 1.7;
+    overflow-x: hidden;
+  }}
 
-    /* Topographic grid background */
-    body::before {{
-      content: '';
-      position: fixed;
-      inset: 0;
-      background-image:
-        linear-gradient(rgba(200,169,110,0.04) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(200,169,110,0.04) 1px, transparent 1px),
-        linear-gradient(rgba(200,169,110,0.015) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(200,169,110,0.015) 1px, transparent 1px);
-      background-size: 240px 240px, 240px 240px, 48px 48px, 48px 48px;
-      pointer-events: none;
-      z-index: 0;
-    }}
+  body::before {{
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(var(--line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--line) 1px, transparent 1px);
+    background-size: 48px 48px;
+    opacity: 0.35;
+    pointer-events: none;
+    z-index: 0;
+  }}
 
-    body > * {{ position: relative; z-index: 1; }}
+  body::after {{
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(var(--line-2) 1px, transparent 1px),
+      linear-gradient(90deg, var(--line-2) 1px, transparent 1px);
+    background-size: 240px 240px;
+    opacity: 0.45;
+    pointer-events: none;
+    z-index: 0;
+  }}
 
-    /* ── NAV ── */
-    nav {{
-      border-bottom: 1px solid var(--border-faint);
-      padding: 0 2rem;
-      height: 52px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      font-family: var(--mono);
-      font-size: 0.72rem;
-      letter-spacing: 0.02em;
-      backdrop-filter: blur(8px);
-      background: rgba(13,13,11,0.7);
-      position: sticky;
-      top: 0;
-      z-index: 100;
-    }}
-    .nav-left {{ display: flex; align-items: center; gap: 0.5rem; }}
-    .nav-logo {{ color: var(--amber); font-weight: 500; }}
-    .nav-sep {{ color: var(--text-dim); }}
-    .nav-muni {{ color: var(--text); }}
-    .nav-postal {{ color: var(--text-dim); }}
-    .nav-right {{ display: flex; align-items: center; gap: 0.75rem; color: var(--text-dim); }}
-    .nav-wsid {{ color: var(--amber); }}
+  .wrap {{
+    position: relative;
+    z-index: 1;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 2rem;
+  }}
 
-    /* ── BADGES ── */
-    .badge {{
-      font-family: var(--mono);
-      font-size: 0.65rem;
-      padding: 2px 8px;
-      border-radius: 2px;
-      letter-spacing: 0.04em;
-    }}
-    .badge-dormant {{ background: rgba(138,133,122,0.15); color: var(--text-dim); border: 1px solid rgba(138,133,122,0.25); }}
-    .badge-live {{ background: rgba(100,180,100,0.12); color: #7ec97e; border: 1px solid rgba(100,180,100,0.25); }}
-    .badge-hold {{ background: rgba(200,169,110,0.1); color: var(--amber); border: 1px solid var(--border); }}
-    .badge-verify {{ background: rgba(200,150,60,0.12); color: #d4924a; border: 1px solid rgba(200,150,60,0.25); }}
+  nav {{
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    border-bottom: 1px solid var(--line-2);
+    background: rgba(15,14,11,0.94);
+    backdrop-filter: blur(8px);
+  }}
+  nav .wrap {{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 52px;
+  }}
+  .nav-left {{ display: flex; align-items: center; gap: 1rem; }}
+  .wordmark {{
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    color: var(--warm);
+    text-decoration: none;
+  }}
+  .wordmark span {{ color: var(--text-muted); font-weight: 300; }}
+  .nav-sep {{ color: var(--text-muted); font-size: 12px; }}
+  .nav-workspace {{
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--text-dim);
+    letter-spacing: 0.06em;
+  }}
+  .nav-right {{
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--text-muted);
+    letter-spacing: 0.08em;
+  }}
 
-    /* ── HERO ── */
-    .hero {{
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 4rem 2rem 2rem;
-    }}
-    .hero-eyebrow {{
-      font-family: var(--mono);
-      font-size: 0.7rem;
-      color: var(--amber);
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      margin-bottom: 0.75rem;
-    }}
-    .hero-title {{
-      font-family: var(--serif);
-      font-size: clamp(2rem, 5vw, 3.5rem);
-      font-weight: 700;
-      line-height: 1.1;
-      margin-bottom: 0.5rem;
-      color: var(--text);
-    }}
-    .hero-subtitle {{
-      font-family: var(--mono);
-      font-size: 0.78rem;
-      color: var(--text-dim);
-      margin-bottom: 2.5rem;
-    }}
-    .hero-subtitle span {{ color: var(--text-mid); }}
+  .hero {{
+    padding: 100px 0 60px;
+    border-bottom: 1px solid var(--line-2);
+  }}
+  .hero-inner {{
+    display: grid;
+    grid-template-columns: 1fr 340px;
+    gap: 4rem;
+    align-items: start;
+  }}
+  @media (max-width: 760px) {{ .hero-inner {{ grid-template-columns: 1fr; }} }}
 
-    /* ── STATS ROW ── */
-    .stats-row {{
-      display: flex;
-      gap: 0;
-      border: 1px solid var(--border);
-      border-radius: 4px;
-      overflow: hidden;
-      margin-bottom: 3rem;
-    }}
-    .stat {{
-      flex: 1;
-      padding: 1.25rem 1.5rem;
-      border-right: 1px solid var(--border);
-      background: var(--bg-card);
-    }}
-    .stat:last-child {{ border-right: none; }}
-    .stat-label {{
-      font-family: var(--mono);
-      font-size: 0.65rem;
-      color: var(--text-dim);
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      margin-bottom: 0.4rem;
-    }}
-    .stat-value {{
-      font-family: var(--serif);
-      font-size: 1.5rem;
-      color: var(--amber);
-      line-height: 1;
-      margin-bottom: 0.25rem;
-    }}
-    .stat-sub {{
-      font-family: var(--mono);
-      font-size: 0.65rem;
-      color: var(--text-dim);
-    }}
+  .hero-label {{
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--warm-dim);
+    margin-bottom: 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }}
+  .hero-label::before {{
+    content: '';
+    display: block;
+    width: 24px;
+    height: 1px;
+    background: var(--warm-dim);
+  }}
 
-    /* ── CLAIM BLOCK ── */
-    .claim-block {{
-      border: 1px solid var(--border);
-      background: var(--bg-card);
-      border-radius: 4px;
-      padding: 2rem;
-      margin-bottom: 4rem;
-    }}
-    .claim-header {{
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      margin-bottom: 1rem;
-      gap: 2rem;
-    }}
-    .claim-title {{
-      font-family: var(--serif);
-      font-size: 1.35rem;
-      font-weight: 700;
-      color: var(--text);
-      margin-bottom: 0.4rem;
-    }}
-    .claim-body {{
-      font-size: 0.875rem;
-      color: var(--text-dim);
-      line-height: 1.6;
-      max-width: 520px;
-    }}
-    .claim-form {{
-      display: flex;
-      gap: 0.75rem;
-      margin-top: 1.5rem;
-      flex-wrap: wrap;
-    }}
-    .claim-input {{
-      background: rgba(0,0,0,0.4);
-      border: 1px solid var(--border);
-      color: var(--text);
-      font-family: var(--mono);
-      font-size: 0.8rem;
-      padding: 0.6rem 1rem;
-      border-radius: 3px;
-      flex: 1;
-      min-width: 220px;
-      outline: none;
-    }}
-    .claim-input:focus {{ border-color: var(--amber); }}
-    .claim-input::placeholder {{ color: var(--text-dim); }}
-    .claim-btn {{
-      background: var(--amber);
-      color: #0d0d0b;
-      border: none;
-      font-family: var(--mono);
-      font-size: 0.75rem;
-      font-weight: 500;
-      letter-spacing: 0.06em;
-      padding: 0.6rem 1.5rem;
-      border-radius: 3px;
-      cursor: pointer;
-      white-space: nowrap;
-    }}
-    .claim-btn:hover {{ background: #daba7e; }}
-    .claim-gate-note {{
-      font-family: var(--mono);
-      font-size: 0.65rem;
-      color: var(--text-dim);
-      margin-top: 0.75rem;
-      letter-spacing: 0.03em;
-    }}
-    .claim-gate-note code {{
-      color: var(--amber);
-      background: var(--amber-dim);
-      padding: 1px 5px;
-      border-radius: 2px;
-    }}
+  h1 {{
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2.4rem, 5vw, 3.8rem);
+    font-weight: 400;
+    line-height: 1.1;
+    color: var(--text);
+    margin-bottom: 1rem;
+  }}
+  h1 em {{ font-style: italic; color: var(--warm); }}
 
-    /* ── SECTION HEADERS ── */
-    .section {{
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 0 2rem;
-      margin-bottom: 4rem;
-    }}
-    .section-header {{
-      display: flex;
-      align-items: baseline;
-      gap: 1rem;
-      margin-bottom: 1.5rem;
-      border-bottom: 1px solid var(--border-faint);
-      padding-bottom: 0.75rem;
-    }}
-    .section-title {{
-      font-family: var(--mono);
-      font-size: 0.7rem;
-      color: var(--amber);
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-    }}
-    .section-rule {{
-      flex: 1;
-      height: 1px;
-      background: var(--border-faint);
-    }}
-    .section-count {{
-      font-family: var(--mono);
-      font-size: 0.65rem;
-      color: var(--text-dim);
-    }}
+  .hero-desc {{
+    font-size: 1rem;
+    color: var(--text-dim);
+    max-width: 520px;
+    line-height: 1.8;
+    margin-bottom: 2rem;
+  }}
 
-    /* ── PROFILE GRID ── */
-    .profile-grid {{
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 1px;
-      background: var(--border-faint);
-      border: 1px solid var(--border-faint);
-      border-radius: 4px;
-      overflow: hidden;
-    }}
-    .profile-card {{
-      background: var(--bg-card);
-      padding: 1.25rem 1.5rem;
-    }}
-    .profile-label {{
-      font-family: var(--mono);
-      font-size: 0.62rem;
-      color: var(--text-dim);
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      margin-bottom: 0.4rem;
-    }}
-    .profile-value {{
-      font-size: 1rem;
-      font-weight: 500;
-      color: var(--text);
-      margin-bottom: 0.25rem;
-      line-height: 1.3;
-    }}
-    .profile-sub {{
-      font-family: var(--mono);
-      font-size: 0.62rem;
-      color: var(--text-dim);
-    }}
+  .claim-block {{
+    background: var(--ground-2);
+    border: 1px solid var(--warm-dim);
+    padding: 1.75rem;
+  }}
+  .claim-block-label {{
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--warm-dim);
+    margin-bottom: 1rem;
+  }}
+  .claim-block p {{
+    font-size: 0.9rem;
+    color: var(--text-dim);
+    line-height: 1.7;
+    margin-bottom: 1.25rem;
+  }}
+  .claim-block p strong {{ color: var(--text); font-weight: 400; }}
+  .claim-input {{
+    width: 100%;
+    background: var(--ground);
+    border: 1px solid var(--line-2);
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    padding: 0.6rem 0.75rem;
+    margin-bottom: 0.75rem;
+    outline: none;
+    transition: border-color 0.2s;
+  }}
+  .claim-input::placeholder {{ color: var(--text-muted); }}
+  .claim-input:focus {{ border-color: var(--warm-dim); }}
+  .claim-btn {{
+    width: 100%;
+    background: var(--warm);
+    color: var(--ground);
+    border: none;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 0.75rem;
+    cursor: pointer;
+    transition: background 0.2s;
+  }}
+  .claim-btn:hover {{ background: var(--warm-bright); }}
+  .claim-note {{
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-top: 0.75rem;
+    font-family: 'DM Mono', monospace;
+    letter-spacing: 0.04em;
+  }}
 
-    /* ── MODULE GRID ── */
-    .module-grid {{
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 1rem;
-    }}
-    .module-card {{
-      background: var(--bg-card);
-      border: 1px solid var(--border-faint);
-      border-radius: 4px;
-      padding: 1.5rem;
-      position: relative;
-      overflow: hidden;
-    }}
-    .module-card::before {{
-      content: '';
-      position: absolute;
-      top: 0; left: 0; right: 0;
-      height: 2px;
-      background: linear-gradient(90deg, var(--amber) 0%, transparent 100%);
-      opacity: 0.4;
-    }}
-    .module-icon {{
-      font-size: 1.25rem;
-      margin-bottom: 0.75rem;
-      display: block;
-    }}
-    .module-name {{
-      font-family: var(--mono);
-      font-size: 0.72rem;
-      color: var(--amber);
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      margin-bottom: 0.5rem;
-    }}
-    .module-desc {{
-      font-size: 0.82rem;
-      color: var(--text-dim);
-      line-height: 1.55;
-    }}
-    .module-status {{
-      display: inline-block;
-      margin-top: 1rem;
-      font-family: var(--mono);
-      font-size: 0.62rem;
-      color: var(--text-dim);
-      letter-spacing: 0.06em;
-    }}
+  .stats-row {{
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1px;
+    border: 1px solid var(--line-2);
+    margin: 2.5rem 0 0;
+  }}
+  @media (max-width: 600px) {{ .stats-row {{ grid-template-columns: 1fr 1fr; }} }}
+  .stat {{
+    background: var(--ground-2);
+    padding: 1.25rem 1rem;
+    border-right: 1px solid var(--line-2);
+  }}
+  .stat-value {{
+    font-family: 'Playfair Display', serif;
+    font-size: 1.6rem;
+    font-weight: 400;
+    color: var(--warm);
+    line-height: 1;
+    margin-bottom: 0.3rem;
+  }}
+  .stat-label {{
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }}
 
-    /* ── GAPS ── */
-    .gaps-list {{
-      display: flex;
-      flex-direction: column;
-      gap: 0;
-      border: 1px solid var(--border-faint);
-      border-radius: 4px;
-      overflow: hidden;
-    }}
-    .gap-item {{
-      display: flex;
-      gap: 1.5rem;
-      padding: 1.5rem;
-      background: var(--bg-card);
-      border-bottom: 1px solid var(--border-faint);
-    }}
-    .gap-item:last-child {{ border-bottom: none; }}
-    .gap-icon {{
-      font-size: 1rem;
-      color: var(--amber);
-      opacity: 0.7;
-      flex-shrink: 0;
-      margin-top: 2px;
-      width: 1rem;
-      text-align: center;
-    }}
-    .gap-title {{
-      font-weight: 500;
-      font-size: 0.9rem;
-      color: var(--text);
-      margin-bottom: 0.4rem;
-    }}
-    .gap-body {{
-      font-size: 0.82rem;
-      color: var(--text-dim);
-      line-height: 1.6;
-    }}
+  section {{ padding: 56px 0; border-bottom: 1px solid var(--line-2); }}
+  .section-label {{
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }}
+  .section-label::after {{
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--line-2);
+    max-width: 80px;
+  }}
+  h2 {{
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.5rem, 3vw, 2.2rem);
+    font-weight: 400;
+    line-height: 1.2;
+    color: var(--text);
+    margin-bottom: 1rem;
+  }}
+  h2 em {{ font-style: italic; color: var(--warm); }}
 
-    /* ── COMMONS TASKS ── */
-    .tasks-list {{
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-    }}
-    .task-item {{
-      display: flex;
-      gap: 1.5rem;
-      padding: 1.5rem;
-      background: var(--bg-card);
-      border: 1px solid var(--border-faint);
-      border-radius: 4px;
-    }}
-    .task-number {{
-      font-family: var(--mono);
-      font-size: 1.2rem;
-      color: var(--amber);
-      opacity: 0.5;
-      flex-shrink: 0;
-      width: 2rem;
-      text-align: right;
-      line-height: 1.3;
-    }}
-    .task-title {{
-      font-weight: 500;
-      font-size: 0.9rem;
-      color: var(--text);
-      margin-bottom: 0.4rem;
-    }}
-    .task-body {{
-      font-size: 0.82rem;
-      color: var(--text-dim);
-      line-height: 1.6;
-    }}
+  .profile-grid {{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2px;
+    margin-top: 2rem;
+  }}
+  @media (max-width: 600px) {{ .profile-grid {{ grid-template-columns: 1fr; }} }}
+  .profile-card {{
+    background: var(--ground-2);
+    border: 1px solid var(--line-2);
+    padding: 1.5rem;
+  }}
+  .profile-card-tag {{
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+  }}
+  .profile-card h3 {{
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    font-weight: 400;
+    color: var(--text);
+    margin-bottom: 0.75rem;
+  }}
+  .profile-card p {{
+    font-size: 0.875rem;
+    color: var(--text-dim);
+    line-height: 1.7;
+  }}
+  .tag-teal {{ color: var(--teal); }}
+  .tag-coral {{ color: var(--coral); }}
+  .tag-amber {{ color: var(--amber); }}
+  .tag-purple {{ color: var(--purple); }}
+  .tag-green {{ color: var(--green); }}
 
-    /* ── CONTACT SECTION ── */
-    .contact-grid {{
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 1px;
-      background: var(--border-faint);
-      border: 1px solid var(--border-faint);
-      border-radius: 4px;
-      overflow: hidden;
-    }}
-    .contact-card {{
-      background: var(--bg-card);
-      padding: 1.5rem;
-    }}
-    .contact-role {{
-      font-family: var(--mono);
-      font-size: 0.62rem;
-      color: var(--text-dim);
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      margin-bottom: 0.4rem;
-    }}
-    .contact-name {{
-      font-size: 1rem;
-      font-weight: 500;
-      color: var(--text);
-      margin-bottom: 0.35rem;
-    }}
-    .contact-link {{
-      font-family: var(--mono);
-      font-size: 0.72rem;
-      color: var(--amber);
-      text-decoration: none;
-    }}
-    .contact-link:hover {{ text-decoration: underline; }}
+  .module-grid {{
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+    margin-top: 2rem;
+  }}
+  @media (max-width: 760px) {{ .module-grid {{ grid-template-columns: 1fr; }} }}
+  .module {{
+    background: var(--ground-2);
+    border: 1px solid var(--line-2);
+    padding: 1.75rem 1.5rem;
+    position: relative;
+    transition: background 0.2s;
+  }}
+  .module:hover {{ background: var(--ground-3); }}
+  .module-status {{
+    position: absolute;
+    top: 1rem; right: 1rem;
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 0.2rem 0.5rem;
+    border: 1px solid;
+  }}
+  .status-dormant {{ color: var(--text-muted); border-color: var(--text-muted); opacity: 0.5; }}
+  .status-ready {{ color: var(--teal); border-color: var(--teal-dim); }}
+  .module-icon {{
+    font-size: 1.4rem;
+    margin-bottom: 0.75rem;
+    font-family: 'DM Mono', monospace;
+    color: var(--text-muted);
+  }}
+  .module h3 {{
+    font-family: 'Playfair Display', serif;
+    font-size: 1.15rem;
+    font-weight: 400;
+    color: var(--text);
+    margin-bottom: 0.4rem;
+  }}
+  .module-sub {{
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 0.75rem;
+  }}
+  .module p {{ font-size: 0.85rem; color: var(--text-dim); line-height: 1.65; }}
+  .module-action {{
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-top: 1rem;
+    cursor: pointer;
+    border: none;
+    background: none;
+    padding: 0;
+  }}
+  .module-teal {{ border-top: 2px solid var(--teal-dim); }}
+  .module-teal .module-sub, .module-teal .module-action {{ color: var(--teal); }}
+  .module-amber {{ border-top: 2px solid var(--amber-dim); }}
+  .module-amber .module-sub, .module-amber .module-action {{ color: var(--amber); }}
+  .module-purple {{ border-top: 2px solid var(--purple-dim); }}
+  .module-purple .module-sub, .module-purple .module-action {{ color: var(--purple); }}
+  .module-coral {{ border-top: 2px solid var(--coral-dim); }}
+  .module-coral .module-sub, .module-coral .module-action {{ color: var(--coral); }}
+  .module-gray {{ border-top: 2px solid var(--line-2); }}
+  .module-gray .module-sub, .module-gray .module-action {{ color: var(--text-muted); }}
+  .module.dormant {{ opacity: 0.6; }}
+  .module.dormant:hover {{ opacity: 0.8; }}
 
-    /* ── CTA FOOTER ── */
-    .cta-section {{
-      max-width: 1100px;
-      margin: 0 auto 3rem;
-      padding: 0 2rem;
-    }}
-    .cta-block {{
-      background: var(--bg-card2);
-      border: 1px solid var(--border);
-      border-radius: 4px;
-      padding: 3rem;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 2rem;
-    }}
-    .cta-text {{ max-width: 520px; }}
-    .cta-eyebrow {{
-      font-family: var(--mono);
-      font-size: 0.68rem;
-      color: var(--amber);
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      margin-bottom: 0.5rem;
-    }}
-    .cta-title {{
-      font-family: var(--serif);
-      font-size: 1.5rem;
-      font-weight: 700;
-      color: var(--text);
-      margin-bottom: 0.75rem;
-    }}
-    .cta-body {{
-      font-size: 0.875rem;
-      color: var(--text-dim);
-      line-height: 1.6;
-    }}
-    .cta-actions {{
-      display: flex;
-      flex-direction: column;
-      gap: 0.75rem;
-      flex-shrink: 0;
-    }}
-    .cta-btn-primary {{
-      background: var(--amber);
-      color: #0d0d0b;
-      border: none;
-      font-family: var(--mono);
-      font-size: 0.75rem;
-      font-weight: 500;
-      letter-spacing: 0.06em;
-      padding: 0.75rem 2rem;
-      border-radius: 3px;
-      cursor: pointer;
-      text-decoration: none;
-      display: inline-block;
-      text-align: center;
-    }}
-    .cta-btn-secondary {{
-      background: transparent;
-      color: var(--amber);
-      border: 1px solid var(--border);
-      font-family: var(--mono);
-      font-size: 0.72rem;
-      letter-spacing: 0.06em;
-      padding: 0.65rem 2rem;
-      border-radius: 3px;
-      cursor: pointer;
-      text-decoration: none;
-      display: inline-block;
-      text-align: center;
-    }}
-    .cta-btn-secondary:hover {{ background: var(--amber-dim); }}
+  .gap-list {{
+    margin-top: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }}
+  .gap-item {{
+    background: var(--ground-2);
+    border: 1px solid var(--line-2);
+    border-left: 3px solid var(--coral-dim);
+    padding: 1rem 1.25rem;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 1rem;
+    align-items: center;
+  }}
+  .gap-item h4 {{
+    font-size: 0.9rem;
+    font-weight: 400;
+    color: var(--text);
+    margin-bottom: 0.2rem;
+  }}
+  .gap-item p {{ font-size: 0.8rem; color: var(--text-dim); }}
+  .gap-tag {{
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--teal);
+    border: 1px solid var(--teal-dim);
+    padding: 0.2rem 0.5rem;
+    white-space: nowrap;
+  }}
 
-    /* ── SITE FOOTER ── */
-    footer {{
-      border-top: 1px solid var(--border-faint);
-      padding: 2rem;
-      max-width: 1100px;
-      margin: 0 auto;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 1rem;
-      flex-wrap: wrap;
-    }}
-    .footer-left {{
-      font-family: var(--mono);
-      font-size: 0.68rem;
-      color: var(--text-dim);
-    }}
-    .footer-left strong {{ color: var(--amber); }}
-    .footer-right {{
-      font-family: var(--mono);
-      font-size: 0.65rem;
-      color: var(--text-dim);
-      text-align: right;
-    }}
+  .task-list {{
+    margin-top: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }}
+  .task {{
+    background: var(--ground-2);
+    border: 1px solid var(--line-2);
+    padding: 1rem 1.25rem;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 1rem;
+    align-items: center;
+  }}
+  .task-num {{
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--warm-dim);
+    min-width: 24px;
+  }}
+  .task h4 {{
+    font-size: 0.875rem;
+    font-weight: 400;
+    color: var(--text);
+    margin-bottom: 0.15rem;
+  }}
+  .task p {{ font-size: 0.78rem; color: var(--text-dim); }}
+  .task-role {{
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    color: var(--text-muted);
+    white-space: nowrap;
+  }}
 
-    /* ── RESPONSIVE ── */
-    @media (max-width: 768px) {{
-      .stats-row {{ flex-wrap: wrap; }}
-      .stat {{ flex: 1 1 40%; }}
-      .profile-grid {{ grid-template-columns: repeat(2, 1fr); }}
-      .module-grid {{ grid-template-columns: 1fr 1fr; }}
-      .contact-grid {{ grid-template-columns: 1fr; }}
-      .cta-block {{ flex-direction: column; }}
-      .claim-header {{ flex-direction: column; }}
+  footer {{ border-top: 1px solid var(--line-2); padding: 2.5rem 0; }}
+  .footer-inner {{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }}
+  .footer-left {{
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--text-muted);
+    line-height: 1.8;
+  }}
+  .footer-left a {{ color: var(--warm-dim); text-decoration: none; }}
+  .footer-left a:hover {{ color: var(--warm); }}
+  .footer-right {{
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--text-muted);
+    text-align: right;
+  }}
+
+  @media (prefers-reduced-motion: no-preference) {{
+    .fade-up {{
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
     }}
-    @media (max-width: 500px) {{
-      .module-grid {{ grid-template-columns: 1fr; }}
-      .profile-grid {{ grid-template-columns: 1fr; }}
-    }}
-  </style>
+    .fade-up.visible {{ opacity: 1; transform: translateY(0); }}
+  }}
+</style>
 </head>
 <body>
 
-  <!-- NAV -->
-  <nav>
+<nav>
+  <div class="wrap">
     <div class="nav-left">
-      <a href="https://smallburg.ca" style="text-decoration:none;">
-        <span class="nav-logo">smallburg.ca</span>
-      </a>
+      <a class="wordmark" href="https://smallburg.ca">smallburg<span>.ca</span></a>
       <span class="nav-sep">/</span>
-      <span class="nav-muni">{name.lower()}</span>
-      <span class="nav-sep">·</span>
-      <span class="nav-postal">{postal}</span>
+      <span class="nav-workspace">{slug} · {postal.lower()}</span>
     </div>
-    <div class="nav-right">
-      <span class="nav-wsid">{workspace_id}</span>
-      <span>·</span>
-      <span>{status_text}</span>
-      {status_badge}
-    </div>
-  </nav>
+    <div class="nav-right">{nav_status}</div>
+  </div>
+</nav>
 
-  <!-- HERO -->
-  <div class="hero">
-    <div class="hero-eyebrow">Smallburg workspace · {county} County · {priority}</div>
-    <h1 class="hero-title">{name}</h1>
-    <div class="hero-subtitle">
-      <span>{coordinates}</span>
-      &nbsp;·&nbsp;
-      <span>pop. {population:,}</span>
-      &nbsp;·&nbsp;
-      <span>{website}</span>
-    </div>
+<div class="wrap">
 
-    <!-- STATS ROW -->
-    <div class="stats-row">
-      <div class="stat">
-        <div class="stat-label">workspace id</div>
-        <div class="stat-value">{workspace_id}</div>
-        <div class="stat-sub">assigned · {county} County</div>
-      </div>
-      <div class="stat">
-        <div class="stat-label">population</div>
-        <div class="stat-value">{population:,}</div>
-        <div class="stat-sub">permanent residents</div>
-      </div>
-      <div class="stat">
-        <div class="stat-label">asset records</div>
-        <div class="stat-value">0</div>
-        <div class="stat-sub">no compliance baseline on file</div>
-      </div>
-      <div class="stat">
-        <div class="stat-label">inspectors</div>
-        <div class="stat-value">0</div>
-        <div class="stat-sub">network not yet established</div>
-      </div>
-    </div>
+  <!-- Hero -->
+  <section class="hero" style="border-bottom:none; padding-bottom:40px">
+    <div class="hero-inner">
+      <div>
+        <div class="hero-label fade-up">Smallburg community workspace</div>
+        <h1 class="fade-up">{h1_top}<br><em>{h1_em}</em></h1>
+        <p class="hero-desc fade-up">{hero_desc}</p>
 
-    <!-- CLAIM BLOCK -->
-    <div class="claim-block">
-      <div class="claim-header">
-        <div>
-          <div class="claim-title">Claim this workspace</div>
-          <div class="claim-body">
-            This workspace is reserved for {name}. Municipal staff, CAO office, and authorized contractors
-            can claim access using an official email address or postal code verification.
-            Once claimed, the workspace becomes the compliance record of {name}.
+        <div class="stats-row fade-up">
+          <div class="stat">
+            <div class="stat-value">{population:,}</div>
+            <div class="stat-label">Population</div>
+          </div>
+          <div class="stat">
+            <div class="stat-value">0</div>
+            <div class="stat-label">Asset records</div>
+          </div>
+          <div class="stat">
+            <div class="stat-value">0</div>
+            <div class="stat-label">Inspectors</div>
+          </div>
+          <div class="stat">
+            <div class="stat-value">{workspace_id}</div>
+            <div class="stat-label">Workspace ID</div>
           </div>
         </div>
-        {status_badge}
       </div>
-      <div class="claim-form">
-        <input class="claim-input" type="email" placeholder="your.name{email_domain}">
-        <button class="claim-btn" onclick="return false;">REQUEST ACCESS →</button>
-      </div>
-      <div class="claim-gate-note">
-        Access gated on <code>{email_domain}</code> email domain · or verify with postal code
-        <code>{postal_prefix}</code>
-      </div>
-    </div>
-  </div>
 
-  <!-- COMMUNITY PROFILE -->
-  <div class="section">
-    <div class="section-header">
-      <span class="section-title">Community profile</span>
-      <div class="section-rule"></div>
-      <span class="section-count">6 signals</span>
-    </div>
-    <div class="profile-grid">
-{cards_html}
-    </div>
-  </div>
-
-  <!-- MODULES -->
-  <div class="section">
-    <div class="section-header">
-      <span class="section-title">Platform modules</span>
-      <div class="section-rule"></div>
-      <span class="section-count">6 modules · dormant</span>
-    </div>
-    <div class="module-grid">
-      <div class="module-card">
-        <span class="module-icon">⬡</span>
-        <div class="module-name">TapLog</div>
-        <div class="module-desc">NFC-based asset inspection. Every fire extinguisher, fall anchor, and regulated asset gets a permanent tamper-evident compliance record.</div>
-        <span class="module-status">● activate first</span>
-      </div>
-      <div class="module-card">
-        <span class="module-icon">◈</span>
-        <div class="module-name">Farpost</div>
-        <div class="module-desc">Insurance claims dispatch. When a claim is filed at an address in {name}, the adjuster sees the full pre-loss asset record from TapLog.</div>
-        <span class="module-status">○ requires TapLog data</span>
-      </div>
-      <div class="module-card">
-        <span class="module-icon">△</span>
-        <div class="module-name">Permit</div>
-        <div class="module-desc">Construction lending verification. Before draw funds are released, the lender checks compliance status at the build address.</div>
-        <span class="module-status">○ coming</span>
-      </div>
-      <div class="module-card">
-        <span class="module-icon">◇</span>
-        <div class="module-name">Roster</div>
-        <div class="module-desc">Industrial workforce authorization. Workers check in via NFC. Safety managers see who's certified, on site, and authorized in real time.</div>
-        <span class="module-status">○ coming</span>
-      </div>
-      <div class="module-card">
-        <span class="module-icon">□</span>
-        <div class="module-name">Ledger</div>
-        <div class="module-desc">Property title and compliance history. When a property changes hands, the full asset record transfers with it as a permanent chain of custody.</div>
-        <span class="module-status">○ coming</span>
-      </div>
-      <div class="module-card">
-        <span class="module-icon">○</span>
-        <div class="module-name">Signal</div>
-        <div class="module-desc">Commercial insurance risk modelling. Underwriters see four years of asset-level compliance data when pricing policies in {county} County.</div>
-        <span class="module-status">○ coming</span>
-      </div>
-    </div>
-  </div>
-
-  <!-- GAPS -->
-  <div class="section">
-    <div class="section-header">
-      <span class="section-title">Documented gaps</span>
-      <div class="section-rule"></div>
-      <span class="section-count">{len(all_gaps)} identified</span>
-    </div>
-    <div class="gaps-list">
-{gaps_html}
-    </div>
-  </div>
-
-  <!-- COMMONS TASKS -->
-  <div class="section">
-    <div class="section-header">
-      <span class="section-title">Commons tasks</span>
-      <div class="section-rule"></div>
-      <span class="section-count">first steps</span>
-    </div>
-    <div class="tasks-list">
-{tasks_html}
-    </div>
-  </div>
-
-  <!-- CONTACTS -->
-  <div class="section">
-    <div class="section-header">
-      <span class="section-title">Municipal contacts</span>
-      <div class="section-rule"></div>
-      <span class="section-count">on record</span>
-    </div>
-    <div class="contact-grid">
-      <div class="contact-card">
-        <div class="contact-role">{mayor_title}</div>
-        <div class="contact-name">{mayor_name}</div>
-        <div style="font-family: var(--mono); font-size: 0.72rem; color: var(--text-dim);">{name}</div>
-      </div>
-      <div class="contact-card">
-        <div class="contact-role">Chief Administrative Officer</div>
-        <div class="contact-name">{cao_name}</div>
-        {cao_contact}
-      </div>
-    </div>
-  </div>
-
-  <!-- CTA -->
-  <div class="cta-section">
-    <div class="cta-block">
-      <div class="cta-text">
-        <div class="cta-eyebrow">Ready to activate</div>
-        <div class="cta-title">Build {name}'s compliance record.</div>
-        <div class="cta-body">
-          Every tap an inspector makes in {name} becomes a permanent, tamper-evident record
-          tied to this workspace. The first inspection is the hardest — after that, the data
-          compounds. Four years from now, {name} has a complete asset history that no
-          neighbouring municipality can match.
+      <div class="fade-up">
+        <div class="claim-block">
+          <div class="claim-block-label">Activate this workspace</div>
+          <p>This workspace is reserved for <strong>{name}</strong> staff and community members. Sign in with your <strong>{email_domain}</strong> email address to activate it.</p>
+          <p>{postal_note}</p>
+          <input class="claim-input" type="email" placeholder="your@{website} or personal email">
+          <input class="claim-input" type="text" placeholder="Postal code (residents only)">
+          <button class="claim-btn" onclick="this.textContent='Request sent — we\\'ll be in touch'; this.style.background='var(--teal)'">Request early access →</button>
+          <div class="claim-note">hello@smallburg.ca · smallburg.ca · Maynooth, ON K0L 2S0</div>
         </div>
       </div>
-      <div class="cta-actions">
-        <a href="mailto:{cao_email if cao_email else 'hello@smallburg.ca'}" class="cta-btn-primary">CONTACT CAO →</a>
-        <a href="https://smallburg.ca" class="cta-btn-secondary">← all workspaces</a>
+    </div>
+  </section>
+
+  <!-- Community profile -->
+  <section>
+    <div class="section-label">Community profile</div>
+    <h2>What we already know<br><em>about {name_short}.</em></h2>
+    <p style="color:var(--text-dim); font-size:0.95rem; max-width:580px; margin-bottom:0">This profile was built from public data before anyone from {name_short} signed up. It updates as your community data grows.</p>
+
+    <div class="profile-grid fade-up">
+{cards_html}
+    </div>
+  </section>
+
+  <!-- Platform modules -->
+  <section>
+    <div class="section-label">Platform modules</div>
+    <h2>Six things this workspace<br><em>is ready to do.</em></h2>
+    <p style="color:var(--text-dim); font-size:0.95rem; max-width:580px; margin-bottom:0">Each module activates independently. Start with one. The rest are waiting.</p>
+
+    <div class="module-grid fade-up">
+
+      <div class="module module-teal">
+        <div class="module-status status-ready">Ready to connect</div>
+        <div class="module-icon">01</div>
+        <h3>TapLog</h3>
+        <div class="module-sub">Built environment</div>
+        <p>Fire safety, fall protection, and regulated trades inspection for every asset in {name}. NFC-tagged, inspection-logged, compliance-tracked. Pre-loss records surface automatically in insurance claims.</p>
+        <button class="module-action">Connect TapLog →</button>
+      </div>
+
+      <div class="module module-amber">
+        <div class="module-status status-dormant">Dormant</div>
+        <div class="module-icon">02</div>
+        <h3>The Commons</h3>
+        <div class="module-sub">Knowledge work marketplace</div>
+        <p>Post local knowledge capture work. {name_short} residents get paid to digitize variance records, verify municipal data, and maintain community datasets. The money stays local. The knowledge stays too.</p>
+        <button class="module-action">Activate Commons →</button>
+      </div>
+
+      <div class="module module-purple">
+        <div class="module-status status-dormant">Dormant</div>
+        <div class="module-icon">03</div>
+        <h3>Muster</h3>
+        <div class="module-sub">Local workforce registry</div>
+        <p>Retired planners. Local tradespeople. People who know {name_short} and have had no economic vehicle for that knowledge — until now. Muster is their registry.</p>
+        <button class="module-action">Build your Muster →</button>
+      </div>
+
+      <div class="module module-coral dormant">
+        <div class="module-status status-dormant">Coming soon</div>
+        <div class="module-icon">04</div>
+        <h3>Farpost</h3>
+        <div class="module-sub">Insurance claims dispatch</div>
+        <p>When a claim is filed for a {name_short} property, the adjuster sees the pre-loss TapLog inspection history automatically. Every compliant asset on record. Every open deficiency flagged.</p>
+        <button class="module-action" style="opacity:0.4; cursor:default">Coming soon</button>
+      </div>
+
+      <div class="module module-coral dormant">
+        <div class="module-status status-dormant">Coming soon</div>
+        <div class="module-icon">05</div>
+        <h3>Parcel</h3>
+        <div class="module-sub">Land record dataset</div>
+        <p>Zoning history. Variances. Easements. Environmental constraints. The land record knowledge that lives in {county} County filing cabinets — digitized, structured, and queryable by civic address.</p>
+        <button class="module-action" style="opacity:0.4; cursor:default">Coming soon</button>
+      </div>
+
+      <div class="module module-gray dormant">
+        <div class="module-status status-dormant">Coming soon</div>
+        <div class="module-icon">06</div>
+        <h3>Ledger</h3>
+        <div class="module-sub">Property compliance history</div>
+        <p>When a property changes hands in {name_short}, the full TapLog and Parcel record transfers with it. The buyer knows what they're getting. The history doesn't disappear.</p>
+        <button class="module-action" style="opacity:0.4; cursor:default">Coming soon</button>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Gaps -->
+  <section>
+    <div class="section-label">What {name_short} is starving for</div>
+    <h2>{gap_heading}</h2>
+
+    <div class="gap-list fade-up">
+{gaps_html}
+    </div>
+  </section>
+
+  <!-- First tasks -->
+  <section>
+    <div class="section-label">First Commons tasks</div>
+    <h2>Work that exists<br><em>right now.</em></h2>
+    <p style="color:var(--text-dim); font-size:0.95rem; max-width:580px; margin-bottom:0">These tasks are waiting in the {name_short} Commons queue. They pay. They build something real. They stay local.</p>
+
+    <div class="task-list fade-up">
+{tasks_html}
+    </div>
+  </section>
+
+  <!-- Footer CTA -->
+  <section style="border-bottom:none">
+    <div class="section-label">Activate this workspace</div>
+    <h2>{name_short} has been<br><em>waiting for this.</em></h2>
+    <p style="color:var(--text-dim); font-size:0.95rem; max-width:560px; margin-bottom:2rem">This workspace was built before you arrived. The community profile is pre-populated. The Commons queue has work waiting. The modules are ready to activate. All it takes is someone with a {email_domain} email address — or a {postal_prefix} postal code — to claim it.</p>
+    <a href="mailto:{cta_email}?subject={cta_subject}" style="display:inline-flex; align-items:center; gap:0.5rem; font-family:'DM Mono',monospace; font-size:11px; letter-spacing:0.12em; text-transform:uppercase; color:var(--warm); border:1px solid var(--warm-dim); padding:0.75rem 1.5rem; text-decoration:none; transition:all 0.2s">{cta_email} →</a>
+  </section>
+
+</div>
+
+<footer>
+  <div class="wrap">
+    <div class="footer-inner">
+      <div class="footer-left">
+        <a href="https://smallburg.ca">smallburg.ca</a> · {workspace_id} · {name} · {postal}<br>
+        Built in Maynooth, Ontario · <a href="mailto:hello@smallburg.ca">hello@smallburg.ca</a>
+      </div>
+      <div class="footer-right">
+        Small town. Big infrastructure.<br>
+        {coordinates}
       </div>
     </div>
   </div>
+</footer>
 
-  <!-- FOOTER -->
-  <footer>
-    <div class="footer-left">
-      <strong>Smallburg</strong> · small town. big infrastructure. · smallburg.ca
-    </div>
-    <div class="footer-right">
-      {workspace_id} · {name} · {county} County<br>
-      <span style="opacity:0.5;">© 2026 Smallburg · Built near Bancroft, Ontario</span>
-    </div>
-  </footer>
+<script>
+  const obs = new IntersectionObserver((entries) => {{
+    entries.forEach(e => {{ if (e.isIntersecting) e.target.classList.add('visible'); }});
+  }}, {{ threshold: 0.08 }});
+  document.querySelectorAll('.fade-up').forEach(el => obs.observe(el));
+</script>
 
 </body>
 </html>"""
@@ -1693,7 +1656,7 @@ def main():
     else:
         targets = [m for m in all_munis if not m.get("page_live")]
 
-    print(f"Generating {len(targets)} workspace page(s) → {args.output_dir}/w/[slug]/index.html\n")
+    print(f"Generating {len(targets)} workspace page(s) -> {args.output_dir}/w/[slug]/index.html\n")
 
     for m in targets:
         flag = ""
@@ -1702,14 +1665,14 @@ def main():
         if m.get("verify"):
             flag = "  ⚠ VERIFY (municipality status unclear)"
         path = write_page(m, output_root=args.output_dir)
-        print(f"  ✓  {m['workspace_id']}  {m['name']:<45} → {path}{flag}")
+        print(f"  ok  {m['workspace_id']}  {m['name']:<45} -> {path}{flag}")
 
     print(f"\nDone. Upload {args.output_dir}/ folder to Cloudflare Pages.")
     print("Pages already live (skipped): bancroft, hastings-highlands, highlands-east")
     print("Use --include-live to regenerate those too.")
     print("\nNotes:")
-    print("  • Dysart et al: HOLD until July (Mayor deceased May 29)")
-    print("  • North Hastings: VERIFY — may not be a standalone municipality")
+    print("  * Dysart et al: HOLD until July (Mayor deceased May 29)")
+    print("  * North Hastings: VERIFY -- may not be a standalone municipality")
 
 
 if __name__ == "__main__":
