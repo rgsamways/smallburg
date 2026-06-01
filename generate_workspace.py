@@ -1633,7 +1633,7 @@ def generate_page(m):
     btn.disabled = true;
 
     try {{
-      const res = await fetch('https://smallburg.ca/api/claim', {{
+      const res = await fetch('https://api.smallburg.ca/api/claims', {{
         method: 'POST',
         headers: {{ 'Content-Type': 'application/json' }},
         body: JSON.stringify({{
