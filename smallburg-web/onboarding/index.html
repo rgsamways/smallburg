@@ -428,7 +428,7 @@
     if (!token) return showError();
 
     try {
-      const res = await fetch(`/api/auth/verify?token=${encodeURIComponent(token)}`);
+      const res = await fetch(`https://api.smallburg.caconst res = await fetch(`https://api.smallburg.ca/api/auth/verify?token=${encodeURIComponent(token)}`);auth/verify?token=${encodeURIComponent(token)}`);
       if (!res.ok) return showError();
       const data = await res.json();
       verifiedData = data;

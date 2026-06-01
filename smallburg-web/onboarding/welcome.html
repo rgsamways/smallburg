@@ -101,7 +101,7 @@
 
   async function init() {
     try {
-      const res = await fetch('/api/auth/me', { credentials: 'include' });
+      const res = await fetch('const res = await fetch(`https://api.smallburg.ca/api/auth/verify?token=${encodeURIComponent(token)}`);auth/me', { credentials: 'include' });
       if (!res.ok) { location.href = 'index.html'; return; }
       const user = await res.json();
 
@@ -109,7 +109,7 @@
       let workspace = { workspace_id: user.primary_workspace, name: user.primary_workspace, asset_count: 0, commons_task_count: 0 };
       if (user.primary_workspace) {
         try {
-          const wr = await fetch(`/api/workspaces/${user.primary_workspace}`, { credentials: 'include' });
+          const wr = await fetch(`const res = await fetch(`https://api.smallburg.ca/api/auth/verify?token=${encodeURIComponent(token)}`);workspaces/${user.primary_workspace}`, { credentials: 'include' });
           if (wr.ok) workspace = await wr.json();
         } catch {}
       }

@@ -128,7 +128,7 @@
 
     // Restore email from verify step if stored
     if (!formData.email && formData.token) {
-      fetch(`/api/auth/verify?token=${encodeURIComponent(formData.token)}`)
+      fetch(`const res = await fetch(`https://api.smallburg.ca/api/auth/verify?token=${encodeURIComponent(token)}`);auth/verify?token=${encodeURIComponent(formData.token)}`)
         .then(r => r.json())
         .then(d => { document.getElementById('s-email').textContent = d.email || '—'; });
     }
@@ -169,7 +169,7 @@
     const password = document.getElementById('password').value;
 
     try {
-      const res = await fetch('/api/auth/register', {
+      const res = await fetch('const res = await fetch(`https://api.smallburg.ca/api/auth/verify?token=${encodeURIComponent(token)}`);auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
