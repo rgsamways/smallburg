@@ -29,7 +29,6 @@
   }
 
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
   html { scroll-behavior: smooth; }
 
   body {
@@ -41,7 +40,6 @@
     overflow-x: hidden;
   }
 
-  /* Topographic grid background */
   body::before {
     content: '';
     position: fixed;
@@ -55,7 +53,6 @@
     z-index: 0;
   }
 
-  /* Contour lines */
   body::after {
     content: '';
     position: fixed;
@@ -77,7 +74,6 @@
     padding: 0 2rem;
   }
 
-  /* ── Nav ── */
   nav {
     position: fixed;
     top: 0; left: 0; right: 0;
@@ -86,14 +82,12 @@
     background: rgba(15, 14, 11, 0.92);
     backdrop-filter: blur(8px);
   }
-
   nav .wrap {
     display: flex;
     align-items: center;
     justify-content: space-between;
     height: 56px;
   }
-
   .wordmark {
     font-family: 'DM Mono', monospace;
     font-size: 15px;
@@ -102,12 +96,7 @@
     color: var(--warm);
     text-decoration: none;
   }
-
-  .wordmark span {
-    color: var(--text-dim);
-    font-weight: 300;
-  }
-
+  .wordmark span { color: var(--text-dim); font-weight: 300; }
   .nav-coords {
     font-family: 'DM Mono', monospace;
     font-size: 11px;
@@ -115,18 +104,13 @@
     letter-spacing: 0.05em;
   }
 
-  /* ── Hero ── */
   .hero {
     min-height: 100vh;
     display: flex;
     align-items: center;
     padding: 120px 0 80px;
   }
-
-  .hero-inner {
-    max-width: 780px;
-  }
-
+  .hero-inner { max-width: 780px; }
   .hero-label {
     font-family: 'DM Mono', monospace;
     font-size: 11px;
@@ -138,7 +122,6 @@
     align-items: center;
     gap: 0.75rem;
   }
-
   .hero-label::before {
     content: '';
     display: block;
@@ -146,7 +129,6 @@
     height: 1px;
     background: var(--warm-dim);
   }
-
   h1 {
     font-family: 'Playfair Display', serif;
     font-size: clamp(3rem, 7vw, 5.5rem);
@@ -155,12 +137,7 @@
     color: var(--text);
     margin-bottom: 1.5rem;
   }
-
-  h1 em {
-    font-style: italic;
-    color: var(--warm);
-  }
-
+  h1 em { font-style: italic; color: var(--warm); }
   .hero-sub {
     font-size: 1.15rem;
     color: var(--text-dim);
@@ -168,7 +145,6 @@
     margin-bottom: 3rem;
     line-height: 1.8;
   }
-
   .hero-cta {
     display: inline-flex;
     align-items: center;
@@ -183,12 +159,7 @@
     padding: 0.75rem 1.5rem;
     transition: all 0.2s;
   }
-
-  .hero-cta:hover {
-    background: var(--warm);
-    color: var(--ground);
-  }
-
+  .hero-cta:hover { background: var(--warm); color: var(--ground); }
   .hero-pin {
     margin-top: 4rem;
     font-family: 'DM Mono', monospace;
@@ -199,7 +170,6 @@
     align-items: center;
     gap: 0.5rem;
   }
-
   .pin-dot {
     width: 6px;
     height: 6px;
@@ -208,17 +178,9 @@
     display: inline-block;
   }
 
-  /* ── Divider ── */
-  .divider {
-    border: none;
-    border-top: 1px solid var(--line-2);
-    margin: 0;
-  }
+  .divider { border: none; border-top: 1px solid var(--line-2); margin: 0; }
 
-  /* ── Section ── */
-  section {
-    padding: 80px 0;
-  }
+  section { padding: 80px 0; }
 
   .section-label {
     font-family: 'DM Mono', monospace;
@@ -231,7 +193,6 @@
     align-items: center;
     gap: 0.75rem;
   }
-
   .section-label::after {
     content: '';
     flex: 1;
@@ -248,7 +209,6 @@
     color: var(--text);
     margin-bottom: 1.5rem;
   }
-
   h2 em { font-style: italic; color: var(--warm); }
 
   .section-body {
@@ -257,20 +217,16 @@
     max-width: 620px;
     line-height: 1.85;
   }
-
   .section-body p + p { margin-top: 1rem; }
 
-  /* ── Two column ── */
   .two-col {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 4rem;
     align-items: start;
   }
-
   @media (max-width: 700px) { .two-col { grid-template-columns: 1fr; gap: 2rem; } }
 
-  /* ── Platform grid ── */
   .platform-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -278,7 +234,6 @@
     border: 1px solid var(--line-2);
     margin-top: 3rem;
   }
-
   .platform-card {
     padding: 1.75rem 1.5rem;
     border-right: 1px solid var(--line-2);
@@ -286,9 +241,7 @@
     background: var(--ground-2);
     transition: background 0.2s;
   }
-
   .platform-card:hover { background: var(--ground-3); }
-
   .platform-card-tag {
     font-family: 'DM Mono', monospace;
     font-size: 10px;
@@ -296,7 +249,6 @@
     text-transform: uppercase;
     margin-bottom: 0.75rem;
   }
-
   .platform-card-name {
     font-family: 'Playfair Display', serif;
     font-size: 1.3rem;
@@ -304,20 +256,13 @@
     margin-bottom: 0.5rem;
     color: var(--text);
   }
-
-  .platform-card-desc {
-    font-size: 0.85rem;
-    color: var(--text-dim);
-    line-height: 1.6;
-  }
-
+  .platform-card-desc { font-size: 0.85rem; color: var(--text-dim); line-height: 1.6; }
   .tag-teal { color: var(--teal); }
   .tag-purple { color: var(--purple); }
   .tag-coral { color: var(--coral); }
   .tag-amber { color: var(--amber); }
   .tag-warm { color: var(--warm); }
 
-  /* ── Engine steps ── */
   .engine-steps {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -325,15 +270,12 @@
     border: 1px solid var(--line-2);
     margin-top: 3rem;
   }
-
   @media (max-width: 700px) { .engine-steps { grid-template-columns: 1fr 1fr; } }
-
   .engine-step {
     padding: 2rem 1.5rem;
     background: var(--ground-2);
     border-right: 1px solid var(--line-2);
   }
-
   .engine-letter {
     font-family: 'Playfair Display', serif;
     font-size: 3rem;
@@ -342,7 +284,6 @@
     line-height: 1;
     margin-bottom: 0.5rem;
   }
-
   .engine-word {
     font-family: 'DM Mono', monospace;
     font-size: 11px;
@@ -351,14 +292,8 @@
     color: var(--text-dim);
     margin-bottom: 0.75rem;
   }
+  .engine-desc { font-size: 0.85rem; color: var(--text-muted); line-height: 1.6; }
 
-  .engine-desc {
-    font-size: 0.85rem;
-    color: var(--text-muted);
-    line-height: 1.6;
-  }
-
-  /* ── Commons block ── */
   .commons-block {
     background: var(--ground-2);
     border: 1px solid var(--line-2);
@@ -367,18 +302,15 @@
     position: relative;
     overflow: hidden;
   }
-
   .commons-block::before {
     content: 'THE COMMONS';
     position: absolute;
-    top: 1.5rem;
-    right: 2rem;
+    top: 1.5rem; right: 2rem;
     font-family: 'DM Mono', monospace;
     font-size: 9px;
     letter-spacing: 0.3em;
     color: var(--text-muted);
   }
-
   .commons-title {
     font-family: 'Playfair Display', serif;
     font-size: 1.6rem;
@@ -386,7 +318,6 @@
     color: var(--warm);
     margin-bottom: 0.75rem;
   }
-
   .commons-body {
     font-size: 0.95rem;
     color: var(--text-dim);
@@ -394,7 +325,6 @@
     line-height: 1.8;
     margin-bottom: 2rem;
   }
-
   .muster-tag {
     display: inline-flex;
     align-items: center;
@@ -407,7 +337,6 @@
     padding: 0.4rem 0.9rem;
   }
 
-  /* ── Loop ── */
   .loop-row {
     display: flex;
     align-items: center;
@@ -416,7 +345,6 @@
     margin-top: 3rem;
     border: 1px solid var(--line-2);
   }
-
   .loop-step {
     flex: 1;
     min-width: 140px;
@@ -425,7 +353,6 @@
     border-right: 1px solid var(--line-2);
     text-align: center;
   }
-
   .loop-step-label {
     font-family: 'DM Mono', monospace;
     font-size: 10px;
@@ -434,26 +361,100 @@
     color: var(--warm-dim);
     margin-bottom: 0.25rem;
   }
+  .loop-step-desc { font-size: 0.8rem; color: var(--text-muted); line-height: 1.5; }
 
-  .loop-step-desc {
-    font-size: 0.8rem;
+  /* ── Directory ── */
+  .dir-search-row {
+    display: flex;
+    gap: 1px;
+    margin-bottom: 2px;
+  }
+  .dir-input {
+    flex: 1;
+    background: var(--ground-2);
+    border: 1px solid var(--line-2);
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    padding: 0.85rem 1.25rem;
+    outline: none;
+    transition: border-color 0.2s;
+    letter-spacing: 0.04em;
+  }
+  .dir-input:focus { border-color: var(--warm-dim); }
+  .dir-input::placeholder { color: var(--text-muted); }
+  .dir-count {
+    background: var(--ground-2);
+    border: 1px solid var(--line-2);
+    border-left: none;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
     color: var(--text-muted);
-    line-height: 1.5;
+    padding: 0.85rem 1.25rem;
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
+    letter-spacing: 0.06em;
   }
-
-  .loop-arrow {
-    padding: 0 0.5rem;
+  .dir-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+  }
+  .dir-item {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 1rem;
+    align-items: center;
+    background: var(--ground-2);
+    border: 1px solid var(--line-2);
+    padding: 1rem 1.25rem;
+    text-decoration: none;
+    transition: background 0.15s;
+  }
+  .dir-item:hover { background: var(--ground-3); border-color: var(--warm-dim); }
+  .dir-item-left { display: flex; flex-direction: column; gap: 0.15rem; }
+  .dir-item-name {
+    font-size: 0.9rem;
+    color: var(--text);
+    font-weight: 400;
+  }
+  .dir-item-meta {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
     color: var(--text-muted);
-    font-size: 1rem;
-    flex-shrink: 0;
+    letter-spacing: 0.06em;
+  }
+  .dir-item-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.2rem;
+  }
+  .dir-item-wsid {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--warm-dim);
+    letter-spacing: 0.06em;
+  }
+  .dir-item-arrow {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+  .dir-item:hover .dir-item-arrow { color: var(--warm); }
+  .dir-empty {
+    padding: 2rem 1.25rem;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--text-muted);
+    background: var(--ground-2);
+    border: 1px solid var(--line-2);
+    letter-spacing: 0.06em;
+    display: none;
   }
 
-  /* ── Footer ── */
-  footer {
-    border-top: 1px solid var(--line-2);
-    padding: 3rem 0;
-  }
-
+  footer { border-top: 1px solid var(--line-2); padding: 3rem 0; }
   .footer-inner {
     display: flex;
     justify-content: space-between;
@@ -461,16 +462,8 @@
     flex-wrap: wrap;
     gap: 2rem;
   }
-
   .footer-left .wordmark { font-size: 18px; display: block; margin-bottom: 0.5rem; }
-
-  .footer-tagline {
-    font-size: 0.85rem;
-    color: var(--text-muted);
-    font-style: italic;
-    font-family: 'Playfair Display', serif;
-  }
-
+  .footer-tagline { font-size: 0.85rem; color: var(--text-muted); font-style: italic; font-family: 'Playfair Display', serif; }
   .footer-right {
     font-family: 'DM Mono', monospace;
     font-size: 11px;
@@ -478,25 +471,16 @@
     text-align: right;
     line-height: 1.8;
   }
-
-  .footer-right a {
-    color: var(--warm-dim);
-    text-decoration: none;
-  }
-
+  .footer-right a { color: var(--warm-dim); text-decoration: none; }
   .footer-right a:hover { color: var(--warm); }
 
-  /* ── Animations ── */
   @media (prefers-reduced-motion: no-preference) {
     .fade-up {
       opacity: 0;
       transform: translateY(24px);
       transition: opacity 0.7s ease, transform 0.7s ease;
     }
-    .fade-up.visible {
-      opacity: 1;
-      transform: translateY(0);
-    }
+    .fade-up.visible { opacity: 1; transform: translateY(0); }
   }
 </style>
 </head>
@@ -517,7 +501,7 @@
       <div class="hero-label fade-up">Founded Maynooth, Ontario</div>
       <h1 class="fade-up">Small town.<br><em>Big infrastructure.</em></h1>
       <p class="hero-sub fade-up">Smallburg builds the municipal services infrastructure that rural Ontario has never had — software that connects local inspectors, adjusters, planners, lenders, and communities around the data that matters most: what's on the land, and what's in the buildings.</p>
-      <a href="#platform" class="hero-cta fade-up">Explore the platform →</a>
+      <a href="#workspaces" class="hero-cta fade-up">Find your workspace →</a>
       <div class="hero-pin fade-up">
         <span class="pin-dot"></span>
         Bancroft · Maynooth · Hastings County
@@ -527,7 +511,7 @@
 
   <hr class="divider">
 
-  <!-- What -->
+  <!-- Platform -->
   <section id="platform">
     <div class="section-label">The platform</div>
     <div class="two-col">
@@ -585,10 +569,8 @@
       </div>
       <div class="section-body">
         <p>Every Smallburg application runs on the same four-step engine. A trigger event occurs. Records are matched to an address. The right information surfaces for the professional who needs to make a decision. The decision becomes a record that feeds the next application downstream.</p>
-        
       </div>
     </div>
-
     <div class="engine-steps fade-up">
       <div class="engine-step">
         <div class="engine-letter">I</div>
@@ -627,13 +609,11 @@
         <p>Retired planners. Local tradespeople. Young people who would otherwise leave. People who know the community and have had no economic vehicle for that knowledge — until now.</p>
       </div>
     </div>
-
     <div class="commons-block fade-up">
       <div class="commons-title">The Commons</div>
       <p class="commons-body">The Commons is Smallburg's knowledge work marketplace. Municipalities post work — digitizing variance applications, capturing inspection records, maintaining dataset currency. Local workers claim that work, complete it, and get paid. The data they produce makes the platform more valuable for everyone.</p>
       <div class="muster-tag">Muster — local workforce registry</div>
     </div>
-
     <div class="loop-row fade-up">
       <div class="loop-step">
         <div class="loop-step-label">Municipality</div>
@@ -660,6 +640,30 @@
         <div class="loop-step-desc">Self-sustaining</div>
       </div>
     </div>
+  </section>
+
+  <hr class="divider">
+
+  <!-- Directory -->
+  <section id="workspaces">
+    <div class="section-label">Workspace directory</div>
+    <div class="two-col" style="margin-bottom: 3rem;">
+      <div>
+        <h2>Your workspace<br><em>is already waiting.</em></h2>
+      </div>
+      <div class="section-body">
+        <p>Every municipality in the Smallburg network has a pre-built workspace. The community profile is already populated. The compliance baseline is ready to be started. All it takes is someone with a municipal email address or local postal code to claim it.</p>
+        <p>Search by municipality name, county, or postal code prefix.</p>
+      </div>
+    </div>
+
+    <div class="dir-search-row fade-up">
+      <input class="dir-input" id="dir-search" type="text" placeholder="Type a municipality, county, or postal code prefix — e.g. K0L, Haliburton, Bancroft" autocomplete="off" spellcheck="false">
+      <div class="dir-count" id="dir-count">28 workspaces</div>
+    </div>
+
+    <div class="dir-list fade-up" id="dir-list"></div>
+    <div class="dir-empty" id="dir-empty">No workspaces match that search.</div>
   </section>
 
   <hr class="divider">
@@ -704,6 +708,81 @@
     entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
   }, { threshold: 0.1 });
   document.querySelectorAll('.fade-up').forEach(el => obs.observe(el));
+
+  const WORKSPACES = [
+    {"name":"Town of Bancroft","slug":"bancroft","county":"Hastings","postal":"K0L 1C0","postal_prefix":"K0L","population":3900,"workspace_id":"ws_0003"},
+    {"name":"Town of Kapuskasing","slug":"kapuskasing","county":"Cochrane","postal":"P5N 1A1","postal_prefix":"P5N","population":8700,"workspace_id":"ws_0001"},
+    {"name":"Township of Muskoka Lakes","slug":"muskoka-lakes","county":"Muskoka","postal":"P0B 1M0","postal_prefix":"P0B","population":6600,"workspace_id":"ws_0002"},
+    {"name":"Municipality of Dysart et al","slug":"dysart-et-al","county":"Haliburton","postal":"K0M 1S0","postal_prefix":"K0M","population":6000,"workspace_id":"ws_0004"},
+    {"name":"Municipality of Minden Hills","slug":"minden-hills","county":"Haliburton","postal":"K0M 2K0","postal_prefix":"K0M","population":5700,"workspace_id":"ws_0005"},
+    {"name":"Town of Cochrane","slug":"cochrane","county":"Cochrane","postal":"P0L 1C0","postal_prefix":"P0L","population":5500,"workspace_id":"ws_0006"},
+    {"name":"Municipality of Sioux Lookout","slug":"sioux-lookout","county":"Kenora","postal":"P8T 1A1","postal_prefix":"P8T","population":5400,"workspace_id":"ws_0007"},
+    {"name":"Municipality of Central Frontenac","slug":"central-frontenac","county":"Frontenac","postal":"K0H 2B0","postal_prefix":"K0H","population":5200,"workspace_id":"ws_0008"},
+    {"name":"Town of Espanola","slug":"espanola","county":"Sudbury","postal":"P5E 1S6","postal_prefix":"P5E","population":5200,"workspace_id":"ws_0009"},
+    {"name":"Municipality of East Ferris","slug":"east-ferris","county":"Nipissing","postal":"P0H 1V0","postal_prefix":"P0H","population":5000,"workspace_id":"ws_0010"},
+    {"name":"Town of Hearst","slug":"hearst","county":"Cochrane","postal":"P0L 1N0","postal_prefix":"P0L","population":5000,"workspace_id":"ws_0011"},
+    {"name":"City of Iroquois Falls","slug":"iroquois-falls","county":"Cochrane","postal":"P0K 1G0","postal_prefix":"P0K","population":4700,"workspace_id":"ws_0012"},
+    {"name":"Municipality of Greenstone","slug":"greenstone","county":"Thunder Bay","postal":"P0T 1V0","postal_prefix":"P0T","population":4700,"workspace_id":"ws_0013"},
+    {"name":"Township of Madawaska Valley","slug":"madawaska-valley","county":"Renfrew","postal":"K0J 1B0","postal_prefix":"K0J","population":4500,"workspace_id":"ws_0014"},
+    {"name":"Municipality of Hastings Highlands","slug":"hastings-highlands","county":"Hastings","postal":"K0L 1C0","postal_prefix":"K0L","population":4400,"workspace_id":"ws_0015"},
+    {"name":"Municipality of Red Lake","slug":"red-lake","county":"Kenora","postal":"P0V 2M0","postal_prefix":"P0V","population":4500,"workspace_id":"ws_0016"},
+    {"name":"Municipality of North Hastings","slug":"north-hastings","county":"Hastings","postal":"K0L 1C0","postal_prefix":"K0L","population":4200,"workspace_id":"ws_0017"},
+    {"name":"Municipality of Nipissing","slug":"nipissing","county":"Nipissing","postal":"P0H 1W0","postal_prefix":"P0H","population":4200,"workspace_id":"ws_0018"},
+    {"name":"Town of Blind River","slug":"blind-river","county":"Algoma","postal":"P0R 1B0","postal_prefix":"P0R","population":3800,"workspace_id":"ws_0019"},
+    {"name":"Township of Lake of Bays","slug":"lake-of-bays","county":"Muskoka","postal":"P0A 1H0","postal_prefix":"P0A","population":3700,"workspace_id":"ws_0020"},
+    {"name":"Township of Bonnechere Valley","slug":"bonnechere-valley","county":"Renfrew","postal":"K0J 1T0","postal_prefix":"K0J","population":3500,"workspace_id":"ws_0021"},
+    {"name":"Municipality of Highlands East","slug":"highlands-east","county":"Haliburton","postal":"K0L 2Y0","postal_prefix":"K0L","population":2900,"workspace_id":"ws_0022"},
+    {"name":"Municipality of Powassan","slug":"powassan","county":"Parry Sound","postal":"P0H 1Z0","postal_prefix":"P0H","population":3400,"workspace_id":"ws_0023"},
+    {"name":"Municipality of Killaloe, Hagarty and Richards","slug":"killaloe-hagarty-richards","county":"Renfrew","postal":"K0J 2A0","postal_prefix":"K0J","population":2700,"workspace_id":"ws_0024"},
+    {"name":"Township of Algonquin Highlands","slug":"algonquin-highlands","county":"Haliburton","postal":"K0M 1J1","postal_prefix":"K0M","population":2500,"workspace_id":"ws_0025"},
+    {"name":"Municipality of Addington Highlands","slug":"addington-highlands","county":"Lennox and Addington","postal":"K0H 1K0","postal_prefix":"K0H","population":2500,"workspace_id":"ws_0026"},
+    {"name":"Township of Georgian Bay","slug":"georgian-bay","county":"Muskoka","postal":"P0C 1H0","postal_prefix":"P0C","population":2500,"workspace_id":"ws_0027"},
+    {"name":"Municipality of North Frontenac","slug":"north-frontenac","county":"Frontenac","postal":"K0H 2K0","postal_prefix":"K0H","population":1900,"workspace_id":"ws_0028"}
+  ].sort((a, b) => a.name.localeCompare(b.name));
+
+  function renderList(items) {
+    const list = document.getElementById('dir-list');
+    const empty = document.getElementById('dir-empty');
+    const count = document.getElementById('dir-count');
+
+    if (items.length === 0) {
+      list.innerHTML = '';
+      empty.style.display = 'block';
+      count.textContent = '0 workspaces';
+      return;
+    }
+
+    empty.style.display = 'none';
+    count.textContent = items.length === 28 ? '28 workspaces' : `${items.length} of 28`;
+
+    list.innerHTML = items.map(w => `
+      <a class="dir-item" href="/w/${w.slug}/">
+        <div class="dir-item-left">
+          <div class="dir-item-name">${w.name}</div>
+          <div class="dir-item-meta">${w.county} County &nbsp;·&nbsp; ${w.postal} &nbsp;·&nbsp; pop. ${w.population.toLocaleString()}</div>
+        </div>
+        <div class="dir-item-right">
+          <div class="dir-item-wsid">${w.workspace_id}</div>
+          <div class="dir-item-arrow">→</div>
+        </div>
+      </a>
+    `).join('');
+  }
+
+  renderList(WORKSPACES);
+
+  document.getElementById('dir-search').addEventListener('input', function() {
+    const q = this.value.trim().toLowerCase();
+    if (!q) { renderList(WORKSPACES); return; }
+    const filtered = WORKSPACES.filter(w =>
+      w.name.toLowerCase().includes(q) ||
+      w.county.toLowerCase().includes(q) ||
+      w.postal.toLowerCase().includes(q) ||
+      w.postal_prefix.toLowerCase().includes(q) ||
+      w.slug.toLowerCase().includes(q)
+    );
+    renderList(filtered);
+  });
 </script>
 
 </body>
