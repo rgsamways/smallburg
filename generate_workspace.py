@@ -1702,7 +1702,10 @@ def main():
             print(f"ERROR: slug '{args.slug}' not found.")
             sys.exit(1)
     else:
-        targets = [m for m in all_munis if not m.get("page_live")]
+        if args.include_live:
+            targets = all_munis
+        else:
+            targets = [m for m in all_munis if not m.get("page_live")]
 
     print(f"Generating {len(targets)} workspace page(s) -> {args.output_dir}/w/[slug]/index.html\n")
 
