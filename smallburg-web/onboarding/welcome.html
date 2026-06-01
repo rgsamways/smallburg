@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Welcome — Smallburg</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&family=Playfair+Display:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #0f0e0b; --surface: #1a1917; --border: #2a2926;
+      --text: #e8e4dc; --muted: #888880; --accent: #c8a96e;
+      --accent-dim: rgba(200,169,110,0.12); --green: #6ea87a;
+      --grid-minor: rgba(255,255,255,0.025); --grid-major: rgba(255,255,255,0.05);
+    }
+    html, body { height: 100%; background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; }
+    body::before {
+      content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 0;
+      background-image: linear-gradient(var(--grid-minor) 1px, transparent 1px), linear-gradient(90deg, var(--grid-minor) 1px, transparent 1px), linear-gradient(var(--grid-major) 1px, transparent 1px), linear-gradient(90deg, var(--grid-major) 1px, transparent 1px);
+      background-size: 48px 48px, 48px 48px, 240px 240px, 240px 240px;
+    }
+    nav { position: fixed; top: 0; left: 0; right: 0; z-index: 10; display: flex; align-items: center; justify-content: space-between; padding: 20px 32px; border-bottom: 1px solid var(--border); background: rgba(15,14,11,0.85); backdrop-filter: blur(8px); }
+    .wordmark { font-family: 'DM Mono', monospace; font-size: 13px; color: var(--accent); letter-spacing: 0.05em; text-decoration: none; }
+    main { position: relative; z-index: 1; min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 120px 24px 64px; }
+    .progress { width: 100%; max-width: 560px; display: flex; gap: 6px; margin-bottom: 48px; }
+    .progress-step { flex: 1; height: 2px; background: rgba(200,169,110,0.4); border-radius: 2px; }
+    .progress-step.active { background: var(--accent); }
+
+    /* Hero greeting */
+    .greeting-wrap { width: 100%; max-width: 560px; margin-bottom: 40px; }
+    .greeting-eyebrow { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); margin-bottom: 10px; }
+    .greeting { font-family: 'Playfair Display', serif; font-style: italic; font-size: 36px; font-weight: 400; line-height: 1.15; }
+
+    /* Workspace card */
+    .workspace-card {
+      width: 100%; max-width: 560px;
+      background: var(--surface); border: 1px solid var(--border); border-radius: 8px;
+      padding: 28px 32px; margin-bottom: 20px;
+    }
+    .ws-label { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
+    .ws-name { font-size: 18px; font-weight: 500; margin-bottom: 4px; }
+    .ws-id { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted); margin-bottom: 20px; }
+    .ws-stats { display: flex; gap: 32px; }
+    .ws-stat-val { font-family: 'DM Mono', monospace; font-size: 22px; color: var(--accent); }
+    .ws-stat-label { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+    /* Module grid */
+    .modules-card {
+      width: 100%; max-width: 560px;
+      background: var(--surface); border: 1px solid var(--border); border-radius: 8px;
+      padding: 28px 32px; margin-bottom: 20px;
+    }
+    .modules-label { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); margin-bottom: 20px; }
+    .modules-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .module-item { display: flex; align-items: center; gap: 10px; padding: 12px 14px; border-radius: 4px; border: 1px solid var(--border); background: var(--bg); }
+    .module-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .module-dot.active { background: var(--green); box-shadow: 0 0 6px rgba(110,168,122,0.4); }
+    .module-dot.dormant { background: var(--border); }
+    .module-name { font-size: 13px; }
+    .module-status { font-size: 11px; color: var(--muted); font-family: 'DM Mono', monospace; margin-left: auto; }
+
+    /* CTAs */
+    .cta-row { width: 100%; max-width: 560px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 24px; }
+    .btn-primary { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 14px 20px; background: var(--accent); color: var(--bg); border: none; border-radius: 4px; font-size: 14px; font-weight: 600; font-family: 'DM Sans', sans-serif; letter-spacing: 0.02em; cursor: pointer; text-decoration: none; transition: opacity 0.2s; text-align: center; }
+    .btn-primary:hover { opacity: 0.88; }
+    .btn-secondary { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 14px 20px; background: transparent; color: var(--text); border: 1px solid var(--border); border-radius: 4px; font-size: 14px; font-weight: 400; font-family: 'DM Sans', sans-serif; cursor: pointer; text-decoration: none; transition: border-color 0.2s, color 0.2s; text-align: center; }
+    .btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
+
+    .loading { color: var(--muted); font-size: 14px; }
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+    .fade-up { animation: fadeUp 0.4s ease forwards; }
+    .fade-up-2 { animation: fadeUp 0.4s ease 0.1s forwards; opacity: 0; }
+    .fade-up-3 { animation: fadeUp 0.4s ease 0.2s forwards; opacity: 0; }
+    .fade-up-4 { animation: fadeUp 0.4s ease 0.3s forwards; opacity: 0; }
+  </style>
+</head>
+<body>
+<nav>
+  <a href="https://smallburg.ca" class="wordmark">smallburg</a>
+</nav>
+<main>
+  <div class="progress">
+    <div class="progress-step" style="background:rgba(200,169,110,0.4)"></div>
+    <div class="progress-step" style="background:rgba(200,169,110,0.4)"></div>
+    <div class="progress-step active"></div>
+  </div>
+
+  <div id="content" class="loading">Loading…</div>
+</main>
+
+<script>
+  const ROLE_LABELS = { inspector: 'Inspector', municipal_staff: 'Municipal staff', community_member: 'Community member' };
+  const DASHBOARD_PATHS = {
+    inspector: '/dashboard/inspector',
+    municipal_staff: '/dashboard/operator',
+    community_member: '/dashboard/commons',
+  };
+
+  const TAPLOG_PLAY_URL = 'https://play.google.com/store/apps/details?id=ca.taplog.app';
+
+  async function init() {
+    try {
+      const res = await fetch('/api/auth/me', { credentials: 'include' });
+      if (!res.ok) { location.href = 'index.html'; return; }
+      const user = await res.json();
+
+      // Fetch primary workspace data
+      let workspace = { workspace_id: user.primary_workspace, name: user.primary_workspace, asset_count: 0, commons_task_count: 0 };
+      if (user.primary_workspace) {
+        try {
+          const wr = await fetch(`/api/workspaces/${user.primary_workspace}`, { credentials: 'include' });
+          if (wr.ok) workspace = await wr.json();
+        } catch {}
+      }
+
+      render(user, workspace);
+    } catch {
+      document.getElementById('content').textContent = 'Something went wrong. Please refresh.';
+    }
+  }
+
+  function render(user, workspace) {
+    const dashPath = DASHBOARD_PATHS[user.role] || '/dashboard';
+    const certNames = { ember: 'Ember', anchor: 'Anchor', hatch: 'Hatch' };
+    const certs = (user.certifications || []).map(c => certNames[c] || c).join(', ');
+
+    // Module visibility by role
+    const modules = [
+      { name: 'TapLog', status: 'active', show: true },
+      { name: 'Commons', status: user.role !== 'inspector' ? 'active' : 'dormant', show: true },
+      { name: 'Parcel', status: 'dormant', show: true },
+      { name: 'Farpost', status: 'dormant', show: true },
+    ];
+
+    const moduleHTML = modules.map(m => `
+      <div class="module-item">
+        <div class="module-dot ${m.status}"></div>
+        <span class="module-name">${m.name}</span>
+        <span class="module-status">${m.status}</span>
+      </div>
+    `).join('');
+
+    document.getElementById('content').outerHTML = `
+      <div class="greeting-wrap fade-up">
+        <div class="greeting-eyebrow">Welcome to Smallburg</div>
+        <div class="greeting">Welcome, ${escHtml(user.name.split(' ')[0])}.</div>
+      </div>
+
+      <div class="workspace-card fade-up-2">
+        <div class="ws-label">Primary workspace</div>
+        <div class="ws-name">${escHtml(workspace.name || workspace.workspace_id)}</div>
+        <div class="ws-id">${escHtml(workspace.workspace_id || '')}</div>
+        <div class="ws-stats">
+          <div>
+            <div class="ws-stat-val">${workspace.asset_count ?? 0}</div>
+            <div class="ws-stat-label">Tagged assets</div>
+          </div>
+          <div>
+            <div class="ws-stat-val">${workspace.commons_task_count ?? 0}</div>
+            <div class="ws-stat-label">Commons tasks</div>
+          </div>
+          <div>
+            <div class="ws-stat-val">${ROLE_LABELS[user.role] || user.role}</div>
+            <div class="ws-stat-label">Your role</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modules-card fade-up-3">
+        <div class="modules-label">Platform modules</div>
+        <div class="modules-grid">${moduleHTML}</div>
+      </div>
+
+      <div class="cta-row fade-up-4">
+        <a href="${escHtml(dashPath)}" class="btn-primary">Go to my dashboard →</a>
+        <a href="${TAPLOG_PLAY_URL}" target="_blank" rel="noopener" class="btn-secondary">📱 Download TapLog for Android</a>
+      </div>
+    `;
+  }
+
+  function escHtml(str) {
+    return String(str ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  init();
+</script>
+</body>
+</html>
