@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Smallburg — Small town. Big infrastructure.</title>
+<meta name="description" content="Smallburg builds municipal-grade services infrastructure for small towns and rural communities across Ontario. TapLog. Farpost. The Commons. Muster.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ground: #0f0e0b;
+    --ground-2: #181610;
+    --ground-3: #221f18;
+    --line: #2e2b22;
+    --line-2: #3d3928;
+    --warm: #c8a96e;
+    --warm-dim: #7a6540;
+    --warm-bright: #e8c887;
+    --text: #e8e4d8;
+    --text-dim: #8a8474;
+    --text-muted: #4a4640;
+    --teal: #4a9e82;
+    --teal-dim: #2a5e4e;
+    --purple: #7a6eb8;
+    --coral: #c06848;
+    --amber: #c89040;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--ground);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    line-height: 1.7;
+    overflow-x: hidden;
+  }
+
+  /* Topographic grid background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(var(--line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--line) 1px, transparent 1px);
+    background-size: 48px 48px;
+    opacity: 0.4;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Contour lines */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(var(--line-2) 1px, transparent 1px),
+      linear-gradient(90deg, var(--line-2) 1px, transparent 1px);
+    background-size: 240px 240px;
+    opacity: 0.5;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .wrap {
+    position: relative;
+    z-index: 1;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 2rem;
+  }
+
+  /* ── Nav ── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    border-bottom: 1px solid var(--line-2);
+    background: rgba(15, 14, 11, 0.92);
+    backdrop-filter: blur(8px);
+  }
+
+  nav .wrap {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 56px;
+  }
+
+  .wordmark {
+    font-family: 'DM Mono', monospace;
+    font-size: 15px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    color: var(--warm);
+    text-decoration: none;
+  }
+
+  .wordmark span {
+    color: var(--text-dim);
+    font-weight: 300;
+  }
+
+  .nav-coords {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--text-muted);
+    letter-spacing: 0.05em;
+  }
+
+  /* ── Hero ── */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    padding: 120px 0 80px;
+  }
+
+  .hero-inner {
+    max-width: 780px;
+  }
+
+  .hero-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--warm-dim);
+    margin-bottom: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .hero-label::before {
+    content: '';
+    display: block;
+    width: 32px;
+    height: 1px;
+    background: var(--warm-dim);
+  }
+
+  h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(3rem, 7vw, 5.5rem);
+    font-weight: 400;
+    line-height: 1.08;
+    color: var(--text);
+    margin-bottom: 1.5rem;
+  }
+
+  h1 em {
+    font-style: italic;
+    color: var(--warm);
+  }
+
+  .hero-sub {
+    font-size: 1.15rem;
+    color: var(--text-dim);
+    max-width: 560px;
+    margin-bottom: 3rem;
+    line-height: 1.8;
+  }
+
+  .hero-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--warm);
+    text-decoration: none;
+    border: 1px solid var(--warm-dim);
+    padding: 0.75rem 1.5rem;
+    transition: all 0.2s;
+  }
+
+  .hero-cta:hover {
+    background: var(--warm);
+    color: var(--ground);
+  }
+
+  .hero-pin {
+    margin-top: 4rem;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--text-muted);
+    letter-spacing: 0.08em;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .pin-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--warm);
+    display: inline-block;
+  }
+
+  /* ── Divider ── */
+  .divider {
+    border: none;
+    border-top: 1px solid var(--line-2);
+    margin: 0;
+  }
+
+  /* ── Section ── */
+  section {
+    padding: 80px 0;
+  }
+
+  .section-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 3rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--line-2);
+    max-width: 120px;
+  }
+
+  h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.8rem, 4vw, 2.8rem);
+    font-weight: 400;
+    line-height: 1.2;
+    color: var(--text);
+    margin-bottom: 1.5rem;
+  }
+
+  h2 em { font-style: italic; color: var(--warm); }
+
+  .section-body {
+    font-size: 1rem;
+    color: var(--text-dim);
+    max-width: 620px;
+    line-height: 1.85;
+  }
+
+  .section-body p + p { margin-top: 1rem; }
+
+  /* ── Two column ── */
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: start;
+  }
+
+  @media (max-width: 700px) { .two-col { grid-template-columns: 1fr; gap: 2rem; } }
+
+  /* ── Platform grid ── */
+  .platform-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1px;
+    border: 1px solid var(--line-2);
+    margin-top: 3rem;
+  }
+
+  .platform-card {
+    padding: 1.75rem 1.5rem;
+    border-right: 1px solid var(--line-2);
+    border-bottom: 1px solid var(--line-2);
+    background: var(--ground-2);
+    transition: background 0.2s;
+  }
+
+  .platform-card:hover { background: var(--ground-3); }
+
+  .platform-card-tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 0.75rem;
+  }
+
+  .platform-card-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.3rem;
+    font-weight: 400;
+    margin-bottom: 0.5rem;
+    color: var(--text);
+  }
+
+  .platform-card-desc {
+    font-size: 0.85rem;
+    color: var(--text-dim);
+    line-height: 1.6;
+  }
+
+  .tag-teal { color: var(--teal); }
+  .tag-purple { color: var(--purple); }
+  .tag-coral { color: var(--coral); }
+  .tag-amber { color: var(--amber); }
+  .tag-warm { color: var(--warm); }
+
+  /* ── Engine steps ── */
+  .engine-steps {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1px;
+    border: 1px solid var(--line-2);
+    margin-top: 3rem;
+  }
+
+  @media (max-width: 700px) { .engine-steps { grid-template-columns: 1fr 1fr; } }
+
+  .engine-step {
+    padding: 2rem 1.5rem;
+    background: var(--ground-2);
+    border-right: 1px solid var(--line-2);
+  }
+
+  .engine-letter {
+    font-family: 'Playfair Display', serif;
+    font-size: 3rem;
+    font-weight: 400;
+    color: var(--warm);
+    line-height: 1;
+    margin-bottom: 0.5rem;
+  }
+
+  .engine-word {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-bottom: 0.75rem;
+  }
+
+  .engine-desc {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+  }
+
+  /* ── Commons block ── */
+  .commons-block {
+    background: var(--ground-2);
+    border: 1px solid var(--line-2);
+    padding: 3rem;
+    margin-top: 3rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .commons-block::before {
+    content: 'THE COMMONS';
+    position: absolute;
+    top: 1.5rem;
+    right: 2rem;
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.3em;
+    color: var(--text-muted);
+  }
+
+  .commons-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.6rem;
+    font-weight: 400;
+    color: var(--warm);
+    margin-bottom: 0.75rem;
+  }
+
+  .commons-body {
+    font-size: 0.95rem;
+    color: var(--text-dim);
+    max-width: 600px;
+    line-height: 1.8;
+    margin-bottom: 2rem;
+  }
+
+  .muster-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    color: var(--teal);
+    border: 1px solid var(--teal-dim);
+    padding: 0.4rem 0.9rem;
+  }
+
+  /* ── Loop ── */
+  .loop-row {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0;
+    margin-top: 3rem;
+    border: 1px solid var(--line-2);
+  }
+
+  .loop-step {
+    flex: 1;
+    min-width: 140px;
+    padding: 1.25rem 1rem;
+    background: var(--ground-2);
+    border-right: 1px solid var(--line-2);
+    text-align: center;
+  }
+
+  .loop-step-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--warm-dim);
+    margin-bottom: 0.25rem;
+  }
+
+  .loop-step-desc {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    line-height: 1.5;
+  }
+
+  .loop-arrow {
+    padding: 0 0.5rem;
+    color: var(--text-muted);
+    font-size: 1rem;
+    flex-shrink: 0;
+  }
+
+  /* ── Footer ── */
+  footer {
+    border-top: 1px solid var(--line-2);
+    padding: 3rem 0;
+  }
+
+  .footer-inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    gap: 2rem;
+  }
+
+  .footer-left .wordmark { font-size: 18px; display: block; margin-bottom: 0.5rem; }
+
+  .footer-tagline {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    font-style: italic;
+    font-family: 'Playfair Display', serif;
+  }
+
+  .footer-right {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--text-muted);
+    text-align: right;
+    line-height: 1.8;
+  }
+
+  .footer-right a {
+    color: var(--warm-dim);
+    text-decoration: none;
+  }
+
+  .footer-right a:hover { color: var(--warm); }
+
+  /* ── Animations ── */
+  @media (prefers-reduced-motion: no-preference) {
+    .fade-up {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .fade-up.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap">
+    <a class="wordmark" href="#">smallburg<span>.ca</span></a>
+    <div class="nav-coords">45.2333° N &nbsp;·&nbsp; 77.9333° W &nbsp;·&nbsp; K0L 2S0</div>
+  </div>
+</nav>
+
+<div class="wrap">
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero-inner">
+      <div class="hero-label fade-up">Founded Maynooth, Ontario</div>
+      <h1 class="fade-up">Small town.<br><em>Big infrastructure.</em></h1>
+      <p class="hero-sub fade-up">Smallburg builds the municipal services infrastructure that rural Ontario has never had — software that connects local inspectors, adjusters, planners, lenders, and communities around the data that matters most: what's on the land, and what's in the buildings.</p>
+      <a href="#platform" class="hero-cta fade-up">Explore the platform →</a>
+      <div class="hero-pin fade-up">
+        <span class="pin-dot"></span>
+        Bancroft · Maynooth · Hastings County
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <!-- What -->
+  <section id="platform">
+    <div class="section-label">The platform</div>
+    <div class="two-col">
+      <div>
+        <h2>Municipal infrastructure,<br><em>finally in software.</em></h2>
+      </div>
+      <div class="section-body">
+        <p>Small municipalities have always needed the same things big cities have — asset inspection records, land use history, claims dispatch, workforce credentialing, property compliance data. They just never had the density to justify a city hall that does all of it.</p>
+        <p>Smallburg is that city hall. A suite of connected applications built on two core datasets — what's in the building, and what the land allows — speaking to each other through a single shared key: the civic address.</p>
+      </div>
+    </div>
+
+    <div class="platform-grid fade-up">
+      <div class="platform-card">
+        <div class="platform-card-tag tag-teal">Core dataset</div>
+        <div class="platform-card-name">TapLog</div>
+        <div class="platform-card-desc">NFC-based asset inspection for regulated trades. Fire safety, fall protection, confined space. The built environment, documented.</div>
+      </div>
+      <div class="platform-card">
+        <div class="platform-card-tag tag-purple">Core dataset</div>
+        <div class="platform-card-name">Parcel</div>
+        <div class="platform-card-desc">Land record digitization. Zoning, variances, easements, environmental constraints. The land beneath the building, documented.</div>
+      </div>
+      <div class="platform-card">
+        <div class="platform-card-tag tag-coral">Application</div>
+        <div class="platform-card-name">Farpost</div>
+        <div class="platform-card-desc">Insurance claims dispatch for rural Ontario. Connects adjusters with verified local contractors. Pre-loss TapLog records surface on every claim.</div>
+      </div>
+      <div class="platform-card">
+        <div class="platform-card-tag tag-amber">Application</div>
+        <div class="platform-card-name">Permit</div>
+        <div class="platform-card-desc">Construction draw management. Compliance verification before funds release. Coming soon.</div>
+      </div>
+      <div class="platform-card">
+        <div class="platform-card-tag tag-warm">Application</div>
+        <div class="platform-card-name">Ledger</div>
+        <div class="platform-card-desc">Property compliance history for real estate transactions. Full TapLog and Parcel record at time of sale. Coming soon.</div>
+      </div>
+      <div class="platform-card">
+        <div class="platform-card-tag tag-purple">Application</div>
+        <div class="platform-card-name">Signal</div>
+        <div class="platform-card-desc">Portfolio risk scoring for commercial property insurers. Compliance trends, deficiency clustering, pre-renewal risk pricing. Coming soon.</div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <!-- Engine -->
+  <section>
+    <div class="section-label">The IMSA engine</div>
+    <div class="two-col">
+      <div>
+        <h2>One engine.<br><em>Every application.</em></h2>
+      </div>
+      <div class="section-body">
+        <p>Every Smallburg application runs on the same four-step engine. A trigger event occurs. Records are matched to an address. The right information surfaces for the professional who needs to make a decision. The decision becomes a record that feeds the next application downstream.</p>
+        
+      </div>
+    </div>
+
+    <div class="engine-steps fade-up">
+      <div class="engine-step">
+        <div class="engine-letter">I</div>
+        <div class="engine-word">Ingest</div>
+        <div class="engine-desc">Consume verified records keyed by civic address</div>
+      </div>
+      <div class="engine-step">
+        <div class="engine-letter">M</div>
+        <div class="engine-word">Match</div>
+        <div class="engine-desc">Trigger event → look up all records for that address</div>
+      </div>
+      <div class="engine-step">
+        <div class="engine-letter">S</div>
+        <div class="engine-word">Surface</div>
+        <div class="engine-desc">Present records in context of the decision to be made</div>
+      </div>
+      <div class="engine-step">
+        <div class="engine-letter">A</div>
+        <div class="engine-word">Act</div>
+        <div class="engine-desc">Better decision → new record → feeds the next application</div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <!-- Commons -->
+  <section>
+    <div class="section-label">The local economic engine</div>
+    <div class="two-col">
+      <div>
+        <h2>The platform<br><em>pays its own community.</em></h2>
+      </div>
+      <div class="section-body">
+        <p>Smallburg isn't just sold to municipalities. It's designed so that the municipality pays for the platform, and the platform creates work for the people who live there.</p>
+        <p>Retired planners. Local tradespeople. Young people who would otherwise leave. People who know the community and have had no economic vehicle for that knowledge — until now.</p>
+      </div>
+    </div>
+
+    <div class="commons-block fade-up">
+      <div class="commons-title">The Commons</div>
+      <p class="commons-body">The Commons is Smallburg's knowledge work marketplace. Municipalities post work — digitizing variance applications, capturing inspection records, maintaining dataset currency. Local workers claim that work, complete it, and get paid. The data they produce makes the platform more valuable for everyone.</p>
+      <div class="muster-tag">Muster — local workforce registry</div>
+    </div>
+
+    <div class="loop-row fade-up">
+      <div class="loop-step">
+        <div class="loop-step-label">Municipality</div>
+        <div class="loop-step-desc">Pays for platform</div>
+      </div>
+      <div class="loop-step">
+        <div class="loop-step-label">Commons</div>
+        <div class="loop-step-desc">Posts local work</div>
+      </div>
+      <div class="loop-step">
+        <div class="loop-step-label">Muster</div>
+        <div class="loop-step-desc">Local workers get paid</div>
+      </div>
+      <div class="loop-step">
+        <div class="loop-step-label">Datasets</div>
+        <div class="loop-step-desc">Get richer</div>
+      </div>
+      <div class="loop-step">
+        <div class="loop-step-label">Platform</div>
+        <div class="loop-step-desc">More valuable</div>
+      </div>
+      <div class="loop-step" style="border-right:none">
+        <div class="loop-step-label">↻ Repeat</div>
+        <div class="loop-step-desc">Self-sustaining</div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <!-- Contact -->
+  <section>
+    <div class="section-label">Get in touch</div>
+    <div class="two-col">
+      <div>
+        <h2>Building something<br><em>that should exist.</em></h2>
+      </div>
+      <div class="section-body">
+        <p>Smallburg is early. TapLog is live. Farpost is live. The integration between them is running. The rest is being built — carefully, in sequence, from the ground up.</p>
+        <p>If you're a municipality, an insurer, a lender, or someone who knows what it means to try to build something in a small town — we'd like to hear from you.</p>
+        <p style="margin-top: 1.5rem;">
+          <a href="mailto:hello@smallburg.ca" style="color: var(--warm); font-family: 'DM Mono', monospace; font-size: 13px; letter-spacing: 0.08em;">hello@smallburg.ca</a>
+        </p>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<footer>
+  <div class="wrap">
+    <div class="footer-inner">
+      <div class="footer-left">
+        <a class="wordmark" href="#">smallburg<span>.ca</span></a>
+        <div class="footer-tagline">Small town. Big infrastructure.</div>
+      </div>
+      <div class="footer-right">
+        Maynooth, Ontario · K0L 2S0<br>
+        Founded June 1, 2026<br>
+        <a href="mailto:hello@smallburg.ca">hello@smallburg.ca</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.fade-up').forEach(el => obs.observe(el));
+</script>
+
+</body>
+</html>

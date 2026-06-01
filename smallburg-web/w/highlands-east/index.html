@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Highlands East — Smallburg Workspace</title>
+<meta name="description" content="Smallburg community workspace for the Municipality of Highlands East, Ontario.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+<style>
+  :root{--ground:#0f0e0b;--ground-2:#181610;--ground-3:#221f18;--line:#2e2b22;--line-2:#3d3928;--warm:#c8a96e;--warm-dim:#7a6540;--warm-bright:#e8c887;--text:#e8e4d8;--text-dim:#8a8474;--text-muted:#4a4640;--teal:#4a9e82;--teal-dim:#2a5e4e;--purple:#7a6eb8;--purple-dim:#3d3770;--coral:#c06848;--coral-dim:#6b3520;--amber:#c89040;--amber-dim:#7a5518;--green:#5a9e48;--green-dim:#2d5422}
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{background:var(--ground);color:var(--text);font-family:'DM Sans',sans-serif;font-weight:300;line-height:1.7;overflow-x:hidden}
+  body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);background-size:48px 48px;opacity:.35;pointer-events:none;z-index:0}
+  body::after{content:'';position:fixed;inset:0;background-image:linear-gradient(var(--line-2) 1px,transparent 1px),linear-gradient(90deg,var(--line-2) 1px,transparent 1px);background-size:240px 240px;opacity:.45;pointer-events:none;z-index:0}
+  .wrap{position:relative;z-index:1;max-width:1100px;margin:0 auto;padding:0 2rem}
+  nav{position:fixed;top:0;left:0;right:0;z-index:100;border-bottom:1px solid var(--line-2);background:rgba(15,14,11,.94);backdrop-filter:blur(8px)}
+  nav .wrap{display:flex;align-items:center;justify-content:space-between;height:52px}
+  .nav-left{display:flex;align-items:center;gap:1rem}
+  .wordmark{font-family:'DM Mono',monospace;font-size:13px;font-weight:500;letter-spacing:.08em;color:var(--warm);text-decoration:none}
+  .wordmark span{color:var(--text-muted);font-weight:300}
+  .nav-sep{color:var(--text-muted);font-size:12px}
+  .nav-workspace{font-family:'DM Mono',monospace;font-size:11px;color:var(--text-dim);letter-spacing:.06em}
+  .nav-right{font-family:'DM Mono',monospace;font-size:10px;color:var(--text-muted);letter-spacing:.08em}
+  .hero{padding:100px 0 60px}
+  .hero-inner{display:grid;grid-template-columns:1fr 340px;gap:4rem;align-items:start}
+  @media(max-width:760px){.hero-inner{grid-template-columns:1fr}}
+  .hero-label{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--warm-dim);margin-bottom:1.25rem;display:flex;align-items:center;gap:.75rem}
+  .hero-label::before{content:'';display:block;width:24px;height:1px;background:var(--warm-dim)}
+  h1{font-family:'Playfair Display',serif;font-size:clamp(2.4rem,5vw,3.8rem);font-weight:400;line-height:1.1;color:var(--text);margin-bottom:1rem}
+  h1 em{font-style:italic;color:var(--warm)}
+  .hero-desc{font-size:1rem;color:var(--text-dim);max-width:520px;line-height:1.8;margin-bottom:2rem}
+  .claim-block{background:var(--ground-2);border:1px solid var(--warm-dim);padding:1.75rem}
+  .claim-block-label{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--warm-dim);margin-bottom:1rem}
+  .claim-block p{font-size:.9rem;color:var(--text-dim);line-height:1.7;margin-bottom:1.25rem}
+  .claim-block p strong{color:var(--text);font-weight:400}
+  .claim-input{width:100%;background:var(--ground);border:1px solid var(--line-2);color:var(--text);font-family:'DM Mono',monospace;font-size:12px;padding:.6rem .75rem;margin-bottom:.75rem;outline:none;transition:border-color .2s}
+  .claim-input::placeholder{color:var(--text-muted)}
+  .claim-input:focus{border-color:var(--warm-dim)}
+  .claim-btn{width:100%;background:var(--warm);color:var(--ground);border:none;font-family:'DM Mono',monospace;font-size:11px;letter-spacing:.12em;text-transform:uppercase;padding:.75rem;cursor:pointer;transition:background .2s}
+  .claim-btn:hover{background:var(--warm-bright)}
+  .claim-note{font-size:.75rem;color:var(--text-muted);margin-top:.75rem;font-family:'DM Mono',monospace;letter-spacing:.04em}
+  .stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;border:1px solid var(--line-2);margin:2.5rem 0 0}
+  @media(max-width:600px){.stats-row{grid-template-columns:1fr 1fr}}
+  .stat{background:var(--ground-2);padding:1.25rem 1rem;border-right:1px solid var(--line-2)}
+  .stat-value{font-family:'Playfair Display',serif;font-size:1.6rem;font-weight:400;color:var(--warm);line-height:1;margin-bottom:.3rem}
+  .stat-label{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--text-muted)}
+  section{padding:56px 0;border-bottom:1px solid var(--line-2)}
+  .section-label{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--text-muted);margin-bottom:2rem;display:flex;align-items:center;gap:.75rem}
+  .section-label::after{content:'';flex:1;height:1px;background:var(--line-2);max-width:80px}
+  h2{font-family:'Playfair Display',serif;font-size:clamp(1.5rem,3vw,2.2rem);font-weight:400;line-height:1.2;color:var(--text);margin-bottom:1rem}
+  h2 em{font-style:italic;color:var(--warm)}
+  .profile-grid{display:grid;grid-template-columns:1fr 1fr;gap:2px;margin-top:2rem}
+  @media(max-width:600px){.profile-grid{grid-template-columns:1fr}}
+  .profile-card{background:var(--ground-2);border:1px solid var(--line-2);padding:1.5rem}
+  .profile-card-tag{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.18em;text-transform:uppercase;margin-bottom:.5rem}
+  .profile-card h3{font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:400;color:var(--text);margin-bottom:.75rem}
+  .profile-card p{font-size:.875rem;color:var(--text-dim);line-height:1.7}
+  .tag-teal{color:var(--teal)}.tag-coral{color:var(--coral)}.tag-amber{color:var(--amber)}.tag-purple{color:var(--purple)}.tag-green{color:var(--green)}
+  .module-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;margin-top:2rem}
+  @media(max-width:760px){.module-grid{grid-template-columns:1fr}}
+  .module{background:var(--ground-2);border:1px solid var(--line-2);padding:1.75rem 1.5rem;position:relative;transition:background .2s}
+  .module:hover{background:var(--ground-3)}
+  .module-status{position:absolute;top:1rem;right:1rem;font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.15em;text-transform:uppercase;padding:.2rem .5rem;border:1px solid}
+  .status-dormant{color:var(--text-muted);border-color:var(--text-muted);opacity:.5}
+  .status-ready{color:var(--teal);border-color:var(--teal-dim)}
+  .module-icon{font-size:1.4rem;margin-bottom:.75rem;font-family:'DM Mono',monospace;color:var(--text-muted)}
+  .module h3{font-family:'Playfair Display',serif;font-size:1.15rem;font-weight:400;color:var(--text);margin-bottom:.4rem}
+  .module-sub{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;margin-bottom:.75rem}
+  .module p{font-size:.85rem;color:var(--text-dim);line-height:1.65}
+  .module-action{display:inline-flex;align-items:center;gap:.4rem;font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;margin-top:1rem;cursor:pointer;border:none;background:none;padding:0;transition:color .2s}
+  .module-teal{border-top:2px solid var(--teal-dim)}.module-teal .module-sub{color:var(--teal)}.module-teal .module-action{color:var(--teal)}
+  .module-amber{border-top:2px solid var(--amber-dim)}.module-amber .module-sub{color:var(--amber)}.module-amber .module-action{color:var(--amber)}
+  .module-purple{border-top:2px solid var(--purple-dim)}.module-purple .module-sub{color:var(--purple)}.module-purple .module-action{color:var(--purple)}
+  .module-coral{border-top:2px solid var(--coral-dim)}.module-coral .module-sub{color:var(--coral)}
+  .module-gray{border-top:2px solid var(--line-2)}.module-gray .module-sub{color:var(--text-muted)}.module-gray .module-action{color:var(--text-dim)}
+  .gap-list{margin-top:1.5rem;display:flex;flex-direction:column;gap:2px}
+  .gap-item{background:var(--ground-2);border:1px solid var(--line-2);border-left:3px solid var(--coral-dim);padding:1rem 1.25rem;display:grid;grid-template-columns:1fr auto;gap:1rem;align-items:center}
+  .gap-item h4{font-size:.9rem;font-weight:400;color:var(--text);margin-bottom:.2rem}
+  .gap-item p{font-size:.8rem;color:var(--text-dim)}
+  .gap-tag{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--teal);border:1px solid var(--teal-dim);padding:.2rem .5rem;white-space:nowrap}
+  .task-list{margin-top:1.5rem;display:flex;flex-direction:column;gap:2px}
+  .task{background:var(--ground-2);border:1px solid var(--line-2);padding:1rem 1.25rem;display:grid;grid-template-columns:auto 1fr auto;gap:1rem;align-items:center}
+  .task-num{font-family:'DM Mono',monospace;font-size:11px;color:var(--warm-dim);min-width:24px}
+  .task h4{font-size:.875rem;font-weight:400;color:var(--text);margin-bottom:.15rem}
+  .task p{font-size:.78rem;color:var(--text-dim)}
+  .task-role{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.1em;color:var(--text-muted);white-space:nowrap}
+  footer{border-top:1px solid var(--line-2);padding:2.5rem 0}
+  .footer-inner{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem}
+  .footer-left{font-family:'DM Mono',monospace;font-size:11px;color:var(--text-muted);line-height:1.8}
+  .footer-left a{color:var(--warm-dim);text-decoration:none}
+  .footer-left a:hover{color:var(--warm)}
+  .footer-right{font-family:'DM Mono',monospace;font-size:10px;color:var(--text-muted);text-align:right}
+  @media(prefers-reduced-motion:no-preference){.fade-up{opacity:0;transform:translateY(20px);transition:opacity .6s ease,transform .6s ease}.fade-up.visible{opacity:1;transform:translateY(0)}}
+</style>
+</head>
+<body>
+<nav>
+  <div class="wrap">
+    <div class="nav-left">
+      <a class="wordmark" href="https://smallburg.ca">smallburg<span>.ca</span></a>
+      <span class="nav-sep">/</span>
+      <span class="nav-workspace">highlands-east · k0l 3c0</span>
+    </div>
+    <div class="nav-right">workspace ws_0022 · dormant · awaiting activation</div>
+  </div>
+</nav>
+<div class="wrap">
+  <section class="hero" style="border-bottom:none;padding-bottom:40px">
+    <div class="hero-inner">
+      <div>
+        <div class="hero-label fade-up">Smallburg community workspace</div>
+        <h1 class="fade-up">Municipality of<br><em>Highlands East</em></h1>
+        <p class="hero-desc fade-up">Cardiff. Wilberforce. Bicroft. Glamorgan. Monmouth. Four former townships, one municipality, 688 km² of Haliburton Highlands. Population 3,830 — scattered, resilient, and deeply connected to this land. This workspace was built for you before you arrived.</p>
+        <div class="stats-row fade-up">
+          <div class="stat"><div class="stat-value">3,830</div><div class="stat-label">Population</div></div>
+          <div class="stat"><div class="stat-value">688</div><div class="stat-label">km² area</div></div>
+          <div class="stat"><div class="stat-value">4</div><div class="stat-label">Former townships</div></div>
+          <div class="stat"><div class="stat-value">K0L</div><div class="stat-label">Postal prefix</div></div>
+        </div>
+      </div>
+      <div class="fade-up">
+        <div class="claim-block">
+          <div class="claim-block-label">Activate this workspace</div>
+          <p>Reserved for <strong>Municipality of Highlands East</strong> staff and residents. Sign in with your <strong>@highlandseast.ca</strong> email to activate.</p>
+          <p>Residents can join with a personal email and postal code <strong>K0L 3C0</strong>.</p>
+          <input class="claim-input" type="email" placeholder="your@highlandseast.ca or personal email">
+          <input class="claim-input" type="text" placeholder="Postal code (residents only)">
+          <button class="claim-btn" onclick="this.textContent='Request sent — we\'ll be in touch';this.style.background='var(--teal)'">Request early access →</button>
+          <div class="claim-note">hello@smallburg.ca · smallburg.ca · Maynooth, ON K0L 2S0</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-label">Community profile</div>
+    <h2>What we already know<br><em>about Highlands East.</em></h2>
+    <div class="profile-grid fade-up">
+      <div class="profile-card">
+        <div class="profile-card-tag tag-amber">History</div>
+        <h3>Uranium, timber, and amalgamation</h3>
+        <p>Cardiff and Bicroft were uranium mining communities — the Bicroft and Dyno mines opened in 1956 and closed within years. The municipality was formed January 1, 2001, through amalgamation of Bicroft, Cardiff, Glamorgan, and Monmouth townships. Like Bancroft, the community transitioned from resource extraction without collapse.</p>
+      </div>
+      <div class="profile-card">
+        <div class="profile-card-tag tag-teal">Economy</div>
+        <h3>Seasonal tourism and trades</h3>
+        <p>Wilberforce is the administrative hub. Tourism, cottaging, and outdoor recreation drive the seasonal economy. Local trades, forestry, and small business form the year-round base. Haliburton County provides upper-tier services. The municipality is one of four lower-tier municipalities in the County.</p>
+      </div>
+      <div class="profile-card">
+        <div class="profile-card-tag tag-green">Leadership</div>
+        <h3>Long-serving and stable</h3>
+        <p>Mayor Dave Burton, 4th term as of 2022. CAO Brittany McCaw. Deputy Mayor Ryall. Council meets second Tuesday monthly at Lloyd Watson Memorial Community Centre, Wilberforce. Livestreamed on YouTube. CivicWeb platform. Active and accessible.</p>
+      </div>
+      <div class="profile-card">
+        <div class="profile-card-tag tag-purple">Geography</div>
+        <h3>Four communities, one voice</h3>
+        <p>Cardiff (historic mining), Wilberforce (administrative hub), Bicroft, and communities across Glamorgan and Monmouth wards. Ward-based representation ensures all corners of the 688 km² municipality have a seat at council.</p>
+      </div>
+      <div class="profile-card">
+        <div class="profile-card-tag tag-coral">Vulnerability</div>
+        <h3>Post-mining identity transition</h3>
+        <p>The Cardiff-Bicroft uranium mining heritage left a physical and economic legacy the community has spent 60+ years navigating. Knowledge of that era — land use, environmental constraints, mineral claim history — is concentrated in an aging generation with no digital capture mechanism.</p>
+      </div>
+      <div class="profile-card">
+        <div class="profile-card-tag tag-amber">Opportunity</div>
+        <h3>Adjacent to Bancroft hub</h3>
+        <p>Highlands East sits at the intersection of Haliburton County and North Hastings — drawing from both the Bancroft service hub and the Haliburton village hub. Positioned to benefit from Smallburg's presence in both counties as the platform expands.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-label">Platform modules</div>
+    <h2>Six things this workspace<br><em>is ready to do.</em></h2>
+    <div class="module-grid fade-up">
+      <div class="module module-teal">
+        <div class="module-status status-ready">Ready to connect</div>
+        <div class="module-icon">01</div>
+        <h3>TapLog</h3>
+        <div class="module-sub">Built environment</div>
+        <p>Fire safety inspection records for every municipal building, community centre, and public facility across Cardiff, Wilberforce, Bicroft, and the full 688 km² municipality.</p>
+        <button class="module-action">Connect TapLog →</button>
+      </div>
+      <div class="module module-amber">
+        <div class="module-status status-dormant">Dormant</div>
+        <div class="module-icon">02</div>
+        <h3>The Commons</h3>
+        <div class="module-sub">Knowledge work marketplace</div>
+        <p>Local knowledge capture work for Highlands East residents. Uranium mine history, land use records, municipal archives — paid research that preserves what the retiring generation carries.</p>
+        <button class="module-action">Activate Commons →</button>
+      </div>
+      <div class="module module-purple">
+        <div class="module-status status-dormant">Dormant</div>
+        <div class="module-icon">03</div>
+        <h3>Muster</h3>
+        <div class="module-sub">Local workforce registry</div>
+        <p>Cardiff has tradespeople, retired mining engineers, environmental specialists, and planners. Muster gives them an economic vehicle for the knowledge they already hold.</p>
+        <button class="module-action">Build your Muster →</button>
+      </div>
+      <div class="module module-coral">
+        <div class="module-status status-dormant">Coming soon</div>
+        <div class="module-icon">04</div>
+        <h3>Farpost</h3>
+        <div class="module-sub">Insurance claims dispatch</div>
+        <p>Pre-loss TapLog records surface automatically for any Highlands East property claim. The adjuster sees the building's history before they pick up the phone.</p>
+        <button class="module-action" style="opacity:.4;cursor:default">Coming soon</button>
+      </div>
+      <div class="module module-coral">
+        <div class="module-status status-dormant">Coming soon</div>
+        <div class="module-icon">05</div>
+        <h3>Parcel</h3>
+        <div class="module-sub">Land record dataset</div>
+        <p>Uranium mine claim history, environmental constraints, Haliburton County zoning — the land record knowledge of Cardiff and Bicroft, digitized and queryable.</p>
+        <button class="module-action" style="opacity:.4;cursor:default">Coming soon</button>
+      </div>
+      <div class="module module-gray">
+        <div class="module-status status-dormant">Coming soon</div>
+        <div class="module-icon">06</div>
+        <h3>Ledger</h3>
+        <div class="module-sub">Property compliance history</div>
+        <p>Full compliance record transfers with every property transaction in Highlands East — including the mining heritage context that affects land value and liability.</p>
+        <button class="module-action" style="opacity:.4;cursor:default">Coming soon</button>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-label">What Highlands East is starving for</div>
+    <h2>The gaps this platform<br><em>was built to close.</em></h2>
+    <div class="gap-list fade-up">
+      <div class="gap-item">
+        <div><h4>60+ years of uranium mining history with no structured digital record</h4><p>The Bicroft and Dyno mines opened in 1956. The people who worked them, mapped them, and managed their closure are in their final decades. That knowledge is not in any system. The Commons captures it.</p></div>
+        <div class="gap-tag">Commons · Parcel</div>
+      </div>
+      <div class="gap-item">
+        <div><h4>No verified building compliance record across four former townships</h4><p>Four amalgamated communities, four legacy building stocks, no unified compliance record. TapLog creates it — one NFC tag at a time, starting with municipal buildings.</p></div>
+        <div class="gap-tag">TapLog</div>
+      </div>
+      <div class="gap-item">
+        <div><h4>Environmental constraint data scattered across provincial and county systems</h4><p>Flood plain, aggregate resource, former mine footprint — land use constraints that affect every development decision in Highlands East, held in formats that don't connect. Parcel connects them.</p></div>
+        <div class="gap-tag">Parcel</div>
+      </div>
+      <div class="gap-item">
+        <div><h4>No local career pathway for residents who want to stay</h4><p>Seasonal tourism creates summer work. The Commons creates year-round skilled employment. Cardiff residents don't need to leave to do meaningful knowledge work.</p></div>
+        <div class="gap-tag">Commons · Muster</div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-label">First Commons tasks</div>
+    <h2>Work waiting<br><em>right now.</em></h2>
+    <div class="task-list fade-up">
+      <div class="task">
+        <div class="task-num">01</div>
+        <div><h4>Verify Highlands East staff directory and email domain</h4><p>Confirm @highlandseast.ca is the active staff email domain. Record current council, department heads, and CAO contact. Est. 2–3 hours.</p></div>
+        <div class="task-role">DIG-GEN</div>
+      </div>
+      <div class="task">
+        <div class="task-num">02</div>
+        <div><h4>Research Cardiff and Bicroft uranium mine land record history</h4><p>What records exist for the former Bicroft and Dyno mine sites? Who holds them — Haliburton County, the province, or federal archives? This is the Parcel reconnaissance for Highlands East. Est. 4–6 hours.</p></div>
+        <div class="task-role">DIG-LU · DIG-ENV</div>
+      </div>
+      <div class="task">
+        <div class="task-num">03</div>
+        <div><h4>Map municipal buildings across Cardiff, Wilberforce, Bicroft and Glamorgan</h4><p>Identify every building the municipality owns or operates across all four former townships. TapLog asset registration seed list. Est. 3–5 hours.</p></div>
+        <div class="task-role">DIG-FS</div>
+      </div>
+    </div>
+  </section>
+
+  <section style="border-bottom:none">
+    <div class="section-label">Activate this workspace</div>
+    <h2>Cardiff remembered<br><em>what Bancroft forgot.</em></h2>
+    <p style="color:var(--text-dim);font-size:.95rem;max-width:560px;margin-bottom:2rem">The uranium mines of Cardiff and Bicroft are part of the same geological story that made Bancroft the Mineral Capital of Canada. Highlands East and Smallburg share more than a county border. This workspace exists because that history deserves to be preserved, not forgotten.</p>
+    <a href="mailto:hello@smallburg.ca?subject=Highlands East workspace — early access" style="display:inline-flex;align-items:center;gap:.5rem;font-family:'DM Mono',monospace;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--warm);border:1px solid var(--warm-dim);padding:.75rem 1.5rem;text-decoration:none;transition:all .2s">hello@smallburg.ca →</a>
+  </section>
+</div>
+<footer>
+  <div class="wrap">
+    <div class="footer-inner">
+      <div class="footer-left"><a href="https://smallburg.ca">smallburg.ca</a> · workspace ws_0022 · Municipality of Highlands East · K0L 3C0<br>Built in Maynooth, Ontario · <a href="mailto:hello@smallburg.ca">hello@smallburg.ca</a></div>
+      <div class="footer-right">Small town. Big infrastructure.<br>44.9670° N · 78.2500° W</div>
+    </div>
+  </div>
+</footer>
+<script>
+  const obs=new IntersectionObserver(e=>{e.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible')})},{threshold:.08});
+  document.querySelectorAll('.fade-up').forEach(el=>obs.observe(el));
+</script>
+</body>
+</html>

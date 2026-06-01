@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Township of Bonnechere Valley — Smallburg Workspace</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,400&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --amber: #c8a96e;
+      --amber-dim: rgba(200, 169, 110, 0.15);
+      --amber-mid: rgba(200, 169, 110, 0.35);
+      --bg: #0d0d0b;
+      --bg-card: #131310;
+      --bg-card2: #171714;
+      --text: #e8e4dc;
+      --text-dim: #8a857a;
+      --text-mid: #b5b0a5;
+      --border: rgba(200, 169, 110, 0.18);
+      --border-faint: rgba(255,255,255,0.06);
+      --mono: 'DM Mono', monospace;
+      --sans: 'DM Sans', sans-serif;
+      --serif: 'Playfair Display', serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      min-height: 100vh;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* Topographic grid background */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(200,169,110,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(200,169,110,0.04) 1px, transparent 1px),
+        linear-gradient(rgba(200,169,110,0.015) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(200,169,110,0.015) 1px, transparent 1px);
+      background-size: 240px 240px, 240px 240px, 48px 48px, 48px 48px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    body > * { position: relative; z-index: 1; }
+
+    /* ── NAV ── */
+    nav {
+      border-bottom: 1px solid var(--border-faint);
+      padding: 0 2rem;
+      height: 52px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      letter-spacing: 0.02em;
+      backdrop-filter: blur(8px);
+      background: rgba(13,13,11,0.7);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .nav-left { display: flex; align-items: center; gap: 0.5rem; }
+    .nav-logo { color: var(--amber); font-weight: 500; }
+    .nav-sep { color: var(--text-dim); }
+    .nav-muni { color: var(--text); }
+    .nav-postal { color: var(--text-dim); }
+    .nav-right { display: flex; align-items: center; gap: 0.75rem; color: var(--text-dim); }
+    .nav-wsid { color: var(--amber); }
+
+    /* ── BADGES ── */
+    .badge {
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      padding: 2px 8px;
+      border-radius: 2px;
+      letter-spacing: 0.04em;
+    }
+    .badge-dormant { background: rgba(138,133,122,0.15); color: var(--text-dim); border: 1px solid rgba(138,133,122,0.25); }
+    .badge-live { background: rgba(100,180,100,0.12); color: #7ec97e; border: 1px solid rgba(100,180,100,0.25); }
+    .badge-hold { background: rgba(200,169,110,0.1); color: var(--amber); border: 1px solid var(--border); }
+    .badge-verify { background: rgba(200,150,60,0.12); color: #d4924a; border: 1px solid rgba(200,150,60,0.25); }
+
+    /* ── HERO ── */
+    .hero {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 4rem 2rem 2rem;
+    }
+    .hero-eyebrow {
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      color: var(--amber);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-bottom: 0.75rem;
+    }
+    .hero-title {
+      font-family: var(--serif);
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      font-weight: 700;
+      line-height: 1.1;
+      margin-bottom: 0.5rem;
+      color: var(--text);
+    }
+    .hero-subtitle {
+      font-family: var(--mono);
+      font-size: 0.78rem;
+      color: var(--text-dim);
+      margin-bottom: 2.5rem;
+    }
+    .hero-subtitle span { color: var(--text-mid); }
+
+    /* ── STATS ROW ── */
+    .stats-row {
+      display: flex;
+      gap: 0;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      overflow: hidden;
+      margin-bottom: 3rem;
+    }
+    .stat {
+      flex: 1;
+      padding: 1.25rem 1.5rem;
+      border-right: 1px solid var(--border);
+      background: var(--bg-card);
+    }
+    .stat:last-child { border-right: none; }
+    .stat-label {
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      color: var(--text-dim);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 0.4rem;
+    }
+    .stat-value {
+      font-family: var(--serif);
+      font-size: 1.5rem;
+      color: var(--amber);
+      line-height: 1;
+      margin-bottom: 0.25rem;
+    }
+    .stat-sub {
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      color: var(--text-dim);
+    }
+
+    /* ── CLAIM BLOCK ── */
+    .claim-block {
+      border: 1px solid var(--border);
+      background: var(--bg-card);
+      border-radius: 4px;
+      padding: 2rem;
+      margin-bottom: 4rem;
+    }
+    .claim-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+      gap: 2rem;
+    }
+    .claim-title {
+      font-family: var(--serif);
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 0.4rem;
+    }
+    .claim-body {
+      font-size: 0.875rem;
+      color: var(--text-dim);
+      line-height: 1.6;
+      max-width: 520px;
+    }
+    .claim-form {
+      display: flex;
+      gap: 0.75rem;
+      margin-top: 1.5rem;
+      flex-wrap: wrap;
+    }
+    .claim-input {
+      background: rgba(0,0,0,0.4);
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-family: var(--mono);
+      font-size: 0.8rem;
+      padding: 0.6rem 1rem;
+      border-radius: 3px;
+      flex: 1;
+      min-width: 220px;
+      outline: none;
+    }
+    .claim-input:focus { border-color: var(--amber); }
+    .claim-input::placeholder { color: var(--text-dim); }
+    .claim-btn {
+      background: var(--amber);
+      color: #0d0d0b;
+      border: none;
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      padding: 0.6rem 1.5rem;
+      border-radius: 3px;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .claim-btn:hover { background: #daba7e; }
+    .claim-gate-note {
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      color: var(--text-dim);
+      margin-top: 0.75rem;
+      letter-spacing: 0.03em;
+    }
+    .claim-gate-note code {
+      color: var(--amber);
+      background: var(--amber-dim);
+      padding: 1px 5px;
+      border-radius: 2px;
+    }
+
+    /* ── SECTION HEADERS ── */
+    .section {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 2rem;
+      margin-bottom: 4rem;
+    }
+    .section-header {
+      display: flex;
+      align-items: baseline;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+      border-bottom: 1px solid var(--border-faint);
+      padding-bottom: 0.75rem;
+    }
+    .section-title {
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      color: var(--amber);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+    .section-rule {
+      flex: 1;
+      height: 1px;
+      background: var(--border-faint);
+    }
+    .section-count {
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      color: var(--text-dim);
+    }
+
+    /* ── PROFILE GRID ── */
+    .profile-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1px;
+      background: var(--border-faint);
+      border: 1px solid var(--border-faint);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    .profile-card {
+      background: var(--bg-card);
+      padding: 1.25rem 1.5rem;
+    }
+    .profile-label {
+      font-family: var(--mono);
+      font-size: 0.62rem;
+      color: var(--text-dim);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 0.4rem;
+    }
+    .profile-value {
+      font-size: 1rem;
+      font-weight: 500;
+      color: var(--text);
+      margin-bottom: 0.25rem;
+      line-height: 1.3;
+    }
+    .profile-sub {
+      font-family: var(--mono);
+      font-size: 0.62rem;
+      color: var(--text-dim);
+    }
+
+    /* ── MODULE GRID ── */
+    .module-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+    }
+    .module-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-faint);
+      border-radius: 4px;
+      padding: 1.5rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .module-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--amber) 0%, transparent 100%);
+      opacity: 0.4;
+    }
+    .module-icon {
+      font-size: 1.25rem;
+      margin-bottom: 0.75rem;
+      display: block;
+    }
+    .module-name {
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      color: var(--amber);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      margin-bottom: 0.5rem;
+    }
+    .module-desc {
+      font-size: 0.82rem;
+      color: var(--text-dim);
+      line-height: 1.55;
+    }
+    .module-status {
+      display: inline-block;
+      margin-top: 1rem;
+      font-family: var(--mono);
+      font-size: 0.62rem;
+      color: var(--text-dim);
+      letter-spacing: 0.06em;
+    }
+
+    /* ── GAPS ── */
+    .gaps-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      border: 1px solid var(--border-faint);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    .gap-item {
+      display: flex;
+      gap: 1.5rem;
+      padding: 1.5rem;
+      background: var(--bg-card);
+      border-bottom: 1px solid var(--border-faint);
+    }
+    .gap-item:last-child { border-bottom: none; }
+    .gap-icon {
+      font-size: 1rem;
+      color: var(--amber);
+      opacity: 0.7;
+      flex-shrink: 0;
+      margin-top: 2px;
+      width: 1rem;
+      text-align: center;
+    }
+    .gap-title {
+      font-weight: 500;
+      font-size: 0.9rem;
+      color: var(--text);
+      margin-bottom: 0.4rem;
+    }
+    .gap-body {
+      font-size: 0.82rem;
+      color: var(--text-dim);
+      line-height: 1.6;
+    }
+
+    /* ── COMMONS TASKS ── */
+    .tasks-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    .task-item {
+      display: flex;
+      gap: 1.5rem;
+      padding: 1.5rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border-faint);
+      border-radius: 4px;
+    }
+    .task-number {
+      font-family: var(--mono);
+      font-size: 1.2rem;
+      color: var(--amber);
+      opacity: 0.5;
+      flex-shrink: 0;
+      width: 2rem;
+      text-align: right;
+      line-height: 1.3;
+    }
+    .task-title {
+      font-weight: 500;
+      font-size: 0.9rem;
+      color: var(--text);
+      margin-bottom: 0.4rem;
+    }
+    .task-body {
+      font-size: 0.82rem;
+      color: var(--text-dim);
+      line-height: 1.6;
+    }
+
+    /* ── CONTACT SECTION ── */
+    .contact-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1px;
+      background: var(--border-faint);
+      border: 1px solid var(--border-faint);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    .contact-card {
+      background: var(--bg-card);
+      padding: 1.5rem;
+    }
+    .contact-role {
+      font-family: var(--mono);
+      font-size: 0.62rem;
+      color: var(--text-dim);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 0.4rem;
+    }
+    .contact-name {
+      font-size: 1rem;
+      font-weight: 500;
+      color: var(--text);
+      margin-bottom: 0.35rem;
+    }
+    .contact-link {
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      color: var(--amber);
+      text-decoration: none;
+    }
+    .contact-link:hover { text-decoration: underline; }
+
+    /* ── CTA FOOTER ── */
+    .cta-section {
+      max-width: 1100px;
+      margin: 0 auto 3rem;
+      padding: 0 2rem;
+    }
+    .cta-block {
+      background: var(--bg-card2);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 3rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 2rem;
+    }
+    .cta-text { max-width: 520px; }
+    .cta-eyebrow {
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      color: var(--amber);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 0.5rem;
+    }
+    .cta-title {
+      font-family: var(--serif);
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 0.75rem;
+    }
+    .cta-body {
+      font-size: 0.875rem;
+      color: var(--text-dim);
+      line-height: 1.6;
+    }
+    .cta-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      flex-shrink: 0;
+    }
+    .cta-btn-primary {
+      background: var(--amber);
+      color: #0d0d0b;
+      border: none;
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      padding: 0.75rem 2rem;
+      border-radius: 3px;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-block;
+      text-align: center;
+    }
+    .cta-btn-secondary {
+      background: transparent;
+      color: var(--amber);
+      border: 1px solid var(--border);
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      letter-spacing: 0.06em;
+      padding: 0.65rem 2rem;
+      border-radius: 3px;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-block;
+      text-align: center;
+    }
+    .cta-btn-secondary:hover { background: var(--amber-dim); }
+
+    /* ── SITE FOOTER ── */
+    footer {
+      border-top: 1px solid var(--border-faint);
+      padding: 2rem;
+      max-width: 1100px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    .footer-left {
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      color: var(--text-dim);
+    }
+    .footer-left strong { color: var(--amber); }
+    .footer-right {
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      color: var(--text-dim);
+      text-align: right;
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 768px) {
+      .stats-row { flex-wrap: wrap; }
+      .stat { flex: 1 1 40%; }
+      .profile-grid { grid-template-columns: repeat(2, 1fr); }
+      .module-grid { grid-template-columns: 1fr 1fr; }
+      .contact-grid { grid-template-columns: 1fr; }
+      .cta-block { flex-direction: column; }
+      .claim-header { flex-direction: column; }
+    }
+    @media (max-width: 500px) {
+      .module-grid { grid-template-columns: 1fr; }
+      .profile-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <div class="nav-left">
+      <a href="https://smallburg.ca" style="text-decoration:none;">
+        <span class="nav-logo">smallburg.ca</span>
+      </a>
+      <span class="nav-sep">/</span>
+      <span class="nav-muni">township of bonnechere valley</span>
+      <span class="nav-sep">·</span>
+      <span class="nav-postal">K0J 1T0</span>
+    </div>
+    <div class="nav-right">
+      <span class="nav-wsid">ws_0021</span>
+      <span>·</span>
+      <span>dormant · awaiting activation</span>
+      <span class="badge badge-dormant">○ dormant</span>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-eyebrow">Smallburg workspace · Renfrew County · P2</div>
+    <h1 class="hero-title">Township of Bonnechere Valley</h1>
+    <div class="hero-subtitle">
+      <span>45.5333° N · 77.1000° W</span>
+      &nbsp;·&nbsp;
+      <span>pop. 3,500</span>
+      &nbsp;·&nbsp;
+      <span>bonnecherevalleytwp.com</span>
+    </div>
+
+    <!-- STATS ROW -->
+    <div class="stats-row">
+      <div class="stat">
+        <div class="stat-label">workspace id</div>
+        <div class="stat-value">ws_0021</div>
+        <div class="stat-sub">assigned · Renfrew County</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">population</div>
+        <div class="stat-value">3,500</div>
+        <div class="stat-sub">permanent residents</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">asset records</div>
+        <div class="stat-value">0</div>
+        <div class="stat-sub">no compliance baseline on file</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">inspectors</div>
+        <div class="stat-value">0</div>
+        <div class="stat-sub">network not yet established</div>
+      </div>
+    </div>
+
+    <!-- CLAIM BLOCK -->
+    <div class="claim-block">
+      <div class="claim-header">
+        <div>
+          <div class="claim-title">Claim this workspace</div>
+          <div class="claim-body">
+            This workspace is reserved for Township of Bonnechere Valley. Municipal staff, CAO office, and authorized contractors
+            can claim access using an official email address or postal code verification.
+            Once claimed, the workspace becomes the compliance record of Township of Bonnechere Valley.
+          </div>
+        </div>
+        <span class="badge badge-dormant">○ dormant</span>
+      </div>
+      <div class="claim-form">
+        <input class="claim-input" type="email" placeholder="your.name@eganville.com">
+        <button class="claim-btn" onclick="return false;">REQUEST ACCESS →</button>
+      </div>
+      <div class="claim-gate-note">
+        Access gated on <code>@eganville.com</code> email domain · or verify with postal code
+        <code>K0J</code>
+      </div>
+    </div>
+  </div>
+
+  <!-- COMMUNITY PROFILE -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-title">Community profile</span>
+      <div class="section-rule"></div>
+      <span class="section-count">6 signals</span>
+    </div>
+    <div class="profile-grid">
+
+          <div class="profile-card">
+            <div class="profile-label">Population</div>
+            <div class="profile-value">3,500</div>
+            <div class="profile-sub">Renfrew County</div>
+          </div>
+          <div class="profile-card">
+            <div class="profile-label">Community type</div>
+            <div class="profile-value">Rural township</div>
+            <div class="profile-sub">Ontario classification</div>
+          </div>
+          <div class="profile-card">
+            <div class="profile-label">Known for</div>
+            <div class="profile-value">Bonnechere River</div>
+            <div class="profile-sub">Primary identity</div>
+          </div>
+          <div class="profile-card">
+            <div class="profile-label">Platform status</div>
+            <div class="profile-value">Workspace reserved</div>
+            <div class="profile-sub">Awaiting activation</div>
+          </div>
+          <div class="profile-card">
+            <div class="profile-label">Asset records</div>
+            <div class="profile-value">0 on file</div>
+            <div class="profile-sub">No compliance baseline</div>
+          </div>
+          <div class="profile-card">
+            <div class="profile-label">Inspector network</div>
+            <div class="profile-value">Not yet established</div>
+            <div class="profile-sub">Workspace dormant</div>
+          </div>
+    </div>
+  </div>
+
+  <!-- MODULES -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-title">Platform modules</span>
+      <div class="section-rule"></div>
+      <span class="section-count">6 modules · dormant</span>
+    </div>
+    <div class="module-grid">
+      <div class="module-card">
+        <span class="module-icon">⬡</span>
+        <div class="module-name">TapLog</div>
+        <div class="module-desc">NFC-based asset inspection. Every fire extinguisher, fall anchor, and regulated asset gets a permanent tamper-evident compliance record.</div>
+        <span class="module-status">● activate first</span>
+      </div>
+      <div class="module-card">
+        <span class="module-icon">◈</span>
+        <div class="module-name">Farpost</div>
+        <div class="module-desc">Insurance claims dispatch. When a claim is filed at an address in Township of Bonnechere Valley, the adjuster sees the full pre-loss asset record from TapLog.</div>
+        <span class="module-status">○ requires TapLog data</span>
+      </div>
+      <div class="module-card">
+        <span class="module-icon">△</span>
+        <div class="module-name">Permit</div>
+        <div class="module-desc">Construction lending verification. Before draw funds are released, the lender checks compliance status at the build address.</div>
+        <span class="module-status">○ coming</span>
+      </div>
+      <div class="module-card">
+        <span class="module-icon">◇</span>
+        <div class="module-name">Roster</div>
+        <div class="module-desc">Industrial workforce authorization. Workers check in via NFC. Safety managers see who's certified, on site, and authorized in real time.</div>
+        <span class="module-status">○ coming</span>
+      </div>
+      <div class="module-card">
+        <span class="module-icon">□</span>
+        <div class="module-name">Ledger</div>
+        <div class="module-desc">Property title and compliance history. When a property changes hands, the full asset record transfers with it as a permanent chain of custody.</div>
+        <span class="module-status">○ coming</span>
+      </div>
+      <div class="module-card">
+        <span class="module-icon">○</span>
+        <div class="module-name">Signal</div>
+        <div class="module-desc">Commercial insurance risk modelling. Underwriters see four years of asset-level compliance data when pricing policies in Renfrew County.</div>
+        <span class="module-status">○ coming</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- GAPS -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-title">Documented gaps</span>
+      <div class="section-rule"></div>
+      <span class="section-count">4 identified</span>
+    </div>
+    <div class="gaps-list">
+
+        <div class="gap-item">
+          <span class="gap-icon">⬡</span>
+          <div class="gap-content">
+            <div class="gap-title">No verified building compliance record</div>
+            <div class="gap-body">Fire safety equipment, fall protection, and structural assets across Township of Bonnechere Valley have never been systematically documented in a tamper-evident digital record. When an incident occurs, there is no pre-loss baseline.</div>
+          </div>
+        </div>
+        <div class="gap-item">
+          <span class="gap-icon">◈</span>
+          <div class="gap-content">
+            <div class="gap-title">No local career pathway in regulated trades</div>
+            <div class="gap-body">Young people in {county} who want to enter inspection, safety compliance, or regulated trades have no structured pathway into those roles that connects local employment with credentialled work.</div>
+          </div>
+        </div>
+        <div class="gap-item">
+          <span class="gap-icon">△</span>
+          <div class="gap-content">
+            <div class="gap-title">Institutional knowledge at retirement risk</div>
+            <div class="gap-body">The people who know where the records are, which buildings have outstanding issues, and how the informal compliance network works are within a decade of retirement. When they leave, that knowledge leaves too.</div>
+          </div>
+        </div>
+        <div class="gap-item">
+          <span class="gap-icon">◇</span>
+          <div class="gap-content">
+            <div class="gap-title">Ottawa Valley corridor compliance data doesn't cross municipal lines</div>
+            <div class="gap-body">Contractors operating across Renfrew County townships — including Township of Bonnechere Valley — have no unified record of which sites they've inspected, leaving gaps at every municipal boundary.</div>
+          </div>
+        </div>
+    </div>
+  </div>
+
+  <!-- COMMONS TASKS -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-title">Commons tasks</span>
+      <div class="section-rule"></div>
+      <span class="section-count">first steps</span>
+    </div>
+    <div class="tasks-list">
+
+        <div class="task-item">
+          <div class="task-number">01</div>
+          <div class="task-content">
+            <div class="task-title">Register your first asset</div>
+            <div class="task-body">Attach an NFC tag to any inspectable asset — fire extinguisher, fall arrest anchor, exit sign. Scan it with TapLog to create the first entry in Township of Bonnechere Valley's compliance record.</div>
+          </div>
+        </div>
+        <div class="task-item">
+          <div class="task-number">02</div>
+          <div class="task-content">
+            <div class="task-title">Map your building inventory</div>
+            <div class="task-body">Upload a list of buildings under municipal jurisdiction. TapLog will generate a workspace asset map — the first complete picture of what exists and what doesn't have a compliance record yet.</div>
+          </div>
+        </div>
+        <div class="task-item">
+          <div class="task-number">03</div>
+          <div class="task-content">
+            <div class="task-title">Invite your first inspector</div>
+            <div class="task-body">Add a certified inspector to your workspace. Every tap they complete in Township of Bonnechere Valley becomes a verified, timestamped record tied to this address.</div>
+          </div>
+        </div>
+        <div class="task-item">
+          <div class="task-number">04</div>
+          <div class="task-content">
+            <div class="task-title">Activate the Algonquin corridor compliance link</div>
+            <div class="task-body">Connect your workspace to the Ottawa Valley corridor network. Contractors and inspectors working between Renfrew County townships will have a single record that follows them.</div>
+          </div>
+        </div>
+    </div>
+  </div>
+
+  <!-- CONTACTS -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-title">Municipal contacts</span>
+      <div class="section-rule"></div>
+      <span class="section-count">on record</span>
+    </div>
+    <div class="contact-grid">
+      <div class="contact-card">
+        <div class="contact-role">Mayor</div>
+        <div class="contact-name">Jennifer Murphy</div>
+        <div style="font-family: var(--mono); font-size: 0.72rem; color: var(--text-dim);">Township of Bonnechere Valley</div>
+      </div>
+      <div class="contact-card">
+        <div class="contact-role">Chief Administrative Officer</div>
+        <div class="contact-name">Annette Gilchrist</div>
+        <a href="mailto:annetteg@eganville.com" class="contact-link">annetteg@eganville.com</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- CTA -->
+  <div class="cta-section">
+    <div class="cta-block">
+      <div class="cta-text">
+        <div class="cta-eyebrow">Ready to activate</div>
+        <div class="cta-title">Build Township of Bonnechere Valley's compliance record.</div>
+        <div class="cta-body">
+          Every tap an inspector makes in Township of Bonnechere Valley becomes a permanent, tamper-evident record
+          tied to this workspace. The first inspection is the hardest — after that, the data
+          compounds. Four years from now, Township of Bonnechere Valley has a complete asset history that no
+          neighbouring municipality can match.
+        </div>
+      </div>
+      <div class="cta-actions">
+        <a href="mailto:annetteg@eganville.com" class="cta-btn-primary">CONTACT CAO →</a>
+        <a href="https://smallburg.ca" class="cta-btn-secondary">← all workspaces</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-left">
+      <strong>Smallburg</strong> · small town. big infrastructure. · smallburg.ca
+    </div>
+    <div class="footer-right">
+      ws_0021 · Township of Bonnechere Valley · Renfrew County<br>
+      <span style="opacity:0.5;">© 2026 Smallburg · Built near Bancroft, Ontario</span>
+    </div>
+  </footer>
+
+</body>
+</html>

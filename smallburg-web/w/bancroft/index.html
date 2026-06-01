@@ -1,0 +1,836 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bancroft — Smallburg Workspace</title>
+<meta name="description" content="Smallburg community workspace for the Town of Bancroft, Ontario. Pre-built infrastructure for local knowledge, compliance, workforce, and community services.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ground: #0f0e0b;
+    --ground-2: #181610;
+    --ground-3: #221f18;
+    --line: #2e2b22;
+    --line-2: #3d3928;
+    --warm: #c8a96e;
+    --warm-dim: #7a6540;
+    --warm-bright: #e8c887;
+    --text: #e8e4d8;
+    --text-dim: #8a8474;
+    --text-muted: #4a4640;
+    --teal: #4a9e82;
+    --teal-dim: #2a5e4e;
+    --teal-bg: #0d2b24;
+    --purple: #7a6eb8;
+    --purple-dim: #3d3770;
+    --purple-bg: #1a1730;
+    --coral: #c06848;
+    --coral-dim: #6b3520;
+    --coral-bg: #2a1510;
+    --amber: #c89040;
+    --amber-dim: #7a5518;
+    --amber-bg: #2a1e08;
+    --green: #5a9e48;
+    --green-dim: #2d5422;
+    --green-bg: #0f1f0b;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--ground);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    line-height: 1.7;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(var(--line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--line) 1px, transparent 1px);
+    background-size: 48px 48px;
+    opacity: 0.35;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(var(--line-2) 1px, transparent 1px),
+      linear-gradient(90deg, var(--line-2) 1px, transparent 1px);
+    background-size: 240px 240px;
+    opacity: 0.45;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .wrap {
+    position: relative;
+    z-index: 1;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 2rem;
+  }
+
+  /* Nav */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    border-bottom: 1px solid var(--line-2);
+    background: rgba(15,14,11,0.94);
+    backdrop-filter: blur(8px);
+  }
+  nav .wrap {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 52px;
+  }
+  .nav-left { display: flex; align-items: center; gap: 1rem; }
+  .wordmark {
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    color: var(--warm);
+    text-decoration: none;
+  }
+  .wordmark span { color: var(--text-muted); font-weight: 300; }
+  .nav-sep { color: var(--text-muted); font-size: 12px; }
+  .nav-workspace {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--text-dim);
+    letter-spacing: 0.06em;
+  }
+  .nav-right {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--text-muted);
+    letter-spacing: 0.08em;
+  }
+
+  /* Hero */
+  .hero {
+    padding: 100px 0 60px;
+    border-bottom: 1px solid var(--line-2);
+  }
+  .hero-inner {
+    display: grid;
+    grid-template-columns: 1fr 340px;
+    gap: 4rem;
+    align-items: start;
+  }
+  @media (max-width: 760px) { .hero-inner { grid-template-columns: 1fr; } }
+
+  .hero-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--warm-dim);
+    margin-bottom: 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  .hero-label::before {
+    content: '';
+    display: block;
+    width: 24px;
+    height: 1px;
+    background: var(--warm-dim);
+  }
+
+  h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2.4rem, 5vw, 3.8rem);
+    font-weight: 400;
+    line-height: 1.1;
+    color: var(--text);
+    margin-bottom: 1rem;
+  }
+  h1 em { font-style: italic; color: var(--warm); }
+
+  .hero-desc {
+    font-size: 1rem;
+    color: var(--text-dim);
+    max-width: 520px;
+    line-height: 1.8;
+    margin-bottom: 2rem;
+  }
+
+  .claim-block {
+    background: var(--ground-2);
+    border: 1px solid var(--warm-dim);
+    padding: 1.75rem;
+  }
+  .claim-block-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--warm-dim);
+    margin-bottom: 1rem;
+  }
+  .claim-block p {
+    font-size: 0.9rem;
+    color: var(--text-dim);
+    line-height: 1.7;
+    margin-bottom: 1.25rem;
+  }
+  .claim-block p strong {
+    color: var(--text);
+    font-weight: 400;
+  }
+  .claim-input {
+    width: 100%;
+    background: var(--ground);
+    border: 1px solid var(--line-2);
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    padding: 0.6rem 0.75rem;
+    margin-bottom: 0.75rem;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .claim-input::placeholder { color: var(--text-muted); }
+  .claim-input:focus { border-color: var(--warm-dim); }
+  .claim-btn {
+    width: 100%;
+    background: var(--warm);
+    color: var(--ground);
+    border: none;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 0.75rem;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .claim-btn:hover { background: var(--warm-bright); }
+  .claim-note {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-top: 0.75rem;
+    font-family: 'DM Mono', monospace;
+    letter-spacing: 0.04em;
+  }
+
+  /* Stats row */
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1px;
+    border: 1px solid var(--line-2);
+    margin: 2.5rem 0 0;
+  }
+  @media (max-width: 600px) { .stats-row { grid-template-columns: 1fr 1fr; } }
+  .stat {
+    background: var(--ground-2);
+    padding: 1.25rem 1rem;
+    border-right: 1px solid var(--line-2);
+  }
+  .stat-value {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.6rem;
+    font-weight: 400;
+    color: var(--warm);
+    line-height: 1;
+    margin-bottom: 0.3rem;
+  }
+  .stat-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+
+  /* Section */
+  section { padding: 56px 0; border-bottom: 1px solid var(--line-2); }
+  .section-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--line-2);
+    max-width: 80px;
+  }
+  h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.5rem, 3vw, 2.2rem);
+    font-weight: 400;
+    line-height: 1.2;
+    color: var(--text);
+    margin-bottom: 1rem;
+  }
+  h2 em { font-style: italic; color: var(--warm); }
+
+  /* Profile grid */
+  .profile-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2px;
+    margin-top: 2rem;
+  }
+  @media (max-width: 600px) { .profile-grid { grid-template-columns: 1fr; } }
+
+  .profile-card {
+    background: var(--ground-2);
+    border: 1px solid var(--line-2);
+    padding: 1.5rem;
+  }
+  .profile-card-tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+  }
+  .profile-card h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    font-weight: 400;
+    color: var(--text);
+    margin-bottom: 0.75rem;
+  }
+  .profile-card p {
+    font-size: 0.875rem;
+    color: var(--text-dim);
+    line-height: 1.7;
+  }
+  .tag-teal { color: var(--teal); }
+  .tag-coral { color: var(--coral); }
+  .tag-amber { color: var(--amber); }
+  .tag-purple { color: var(--purple); }
+  .tag-green { color: var(--green); }
+
+  /* Module grid */
+  .module-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+    margin-top: 2rem;
+  }
+  @media (max-width: 760px) { .module-grid { grid-template-columns: 1fr; } }
+
+  .module {
+    background: var(--ground-2);
+    border: 1px solid var(--line-2);
+    padding: 1.75rem 1.5rem;
+    position: relative;
+    transition: background 0.2s;
+  }
+  .module:hover { background: var(--ground-3); }
+
+  .module-status {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 0.2rem 0.5rem;
+    border: 1px solid;
+  }
+  .status-dormant { color: var(--text-muted); border-color: var(--text-muted); opacity: 0.5; }
+  .status-ready { color: var(--teal); border-color: var(--teal-dim); }
+  .status-active { color: var(--warm); border-color: var(--warm-dim); }
+
+  .module-icon {
+    font-size: 1.4rem;
+    margin-bottom: 0.75rem;
+    font-family: 'DM Mono', monospace;
+    color: var(--text-muted);
+  }
+  .module h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.15rem;
+    font-weight: 400;
+    color: var(--text);
+    margin-bottom: 0.4rem;
+  }
+  .module-sub {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 0.75rem;
+  }
+  .module p {
+    font-size: 0.85rem;
+    color: var(--text-dim);
+    line-height: 1.65;
+  }
+  .module-action {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-top: 1rem;
+    cursor: pointer;
+    border: none;
+    background: none;
+    padding: 0;
+    transition: color 0.2s;
+  }
+
+  .module-teal { border-top: 2px solid var(--teal-dim); }
+  .module-teal .module-sub { color: var(--teal); }
+  .module-teal .module-action { color: var(--teal); }
+  .module-teal .module-action:hover { color: #7fd6b8; }
+
+  .module-amber { border-top: 2px solid var(--amber-dim); }
+  .module-amber .module-sub { color: var(--amber); }
+  .module-amber .module-action { color: var(--amber); }
+  .module-amber .module-action:hover { color: var(--warm-bright); }
+
+  .module-purple { border-top: 2px solid var(--purple-dim); }
+  .module-purple .module-sub { color: var(--purple); }
+  .module-purple .module-action { color: var(--purple); }
+  .module-purple .module-action:hover { color: #b0a8e0; }
+
+  .module-coral { border-top: 2px solid var(--coral-dim); }
+  .module-coral .module-sub { color: var(--coral); }
+  .module-coral .module-action { color: var(--coral); }
+
+  .module-green { border-top: 2px solid var(--green-dim); }
+  .module-green .module-sub { color: var(--green); }
+  .module-green .module-action { color: var(--green); }
+
+  .module-gray { border-top: 2px solid var(--line-2); }
+  .module-gray .module-sub { color: var(--text-muted); }
+  .module-gray .module-action { color: var(--text-dim); }
+
+  /* Gaps */
+  .gap-list {
+    margin-top: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .gap-item {
+    background: var(--ground-2);
+    border: 1px solid var(--line-2);
+    border-left: 3px solid var(--coral-dim);
+    padding: 1rem 1.25rem;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 1rem;
+    align-items: center;
+  }
+  .gap-item h4 {
+    font-size: 0.9rem;
+    font-weight: 400;
+    color: var(--text);
+    margin-bottom: 0.2rem;
+  }
+  .gap-item p {
+    font-size: 0.8rem;
+    color: var(--text-dim);
+  }
+  .gap-tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--teal);
+    border: 1px solid var(--teal-dim);
+    padding: 0.2rem 0.5rem;
+    white-space: nowrap;
+  }
+
+  /* First tasks */
+  .task-list {
+    margin-top: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .task {
+    background: var(--ground-2);
+    border: 1px solid var(--line-2);
+    padding: 1rem 1.25rem;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 1rem;
+    align-items: center;
+  }
+  .task-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--warm-dim);
+    min-width: 24px;
+  }
+  .task h4 {
+    font-size: 0.875rem;
+    font-weight: 400;
+    color: var(--text);
+    margin-bottom: 0.15rem;
+  }
+  .task p {
+    font-size: 0.78rem;
+    color: var(--text-dim);
+  }
+  .task-role {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    color: var(--text-muted);
+    white-space: nowrap;
+  }
+
+  /* Footer */
+  footer {
+    border-top: 1px solid var(--line-2);
+    padding: 2.5rem 0;
+  }
+  .footer-inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+  .footer-left {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--text-muted);
+    line-height: 1.8;
+  }
+  .footer-left a { color: var(--warm-dim); text-decoration: none; }
+  .footer-left a:hover { color: var(--warm); }
+  .footer-right {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--text-muted);
+    text-align: right;
+  }
+
+  /* Animations */
+  @media (prefers-reduced-motion: no-preference) {
+    .fade-up {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+    .fade-up.visible { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Dormant overlay on modules */
+  .module.dormant { opacity: 0.6; }
+  .module.dormant:hover { opacity: 0.8; }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap">
+    <div class="nav-left">
+      <a class="wordmark" href="https://smallburg.ca">smallburg<span>.ca</span></a>
+      <span class="nav-sep">/</span>
+      <span class="nav-workspace">bancroft · k0l 1c0</span>
+    </div>
+    <div class="nav-right">workspace ws_0003 · dormant · awaiting activation</div>
+  </div>
+</nav>
+
+<div class="wrap">
+
+  <!-- Hero -->
+  <section class="hero" style="border-bottom:none; padding-bottom:40px">
+    <div class="hero-inner">
+      <div>
+        <div class="hero-label fade-up">Smallburg community workspace</div>
+        <h1 class="fade-up">Town of<br><em>Bancroft</em></h1>
+        <p class="hero-desc fade-up">Mineral Capital of Canada. Hub of North Hastings. Population 4,065 — regional draw of 40,000+. This workspace was built for you before you arrived. It knows your community. It's waiting to be activated.</p>
+
+        <div class="stats-row fade-up">
+          <div class="stat">
+            <div class="stat-value">4,065</div>
+            <div class="stat-label">Town population</div>
+          </div>
+          <div class="stat">
+            <div class="stat-value">40K+</div>
+            <div class="stat-label">Regional draw</div>
+          </div>
+          <div class="stat">
+            <div class="stat-value">50.4</div>
+            <div class="stat-label">Median age</div>
+          </div>
+          <div class="stat">
+            <div class="stat-value">$57K</div>
+            <div class="stat-label">Median income</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="fade-up">
+        <div class="claim-block">
+          <div class="claim-block-label">Activate this workspace</div>
+          <p>This workspace is reserved for <strong>Town of Bancroft</strong> staff and community members. Sign in with your <strong>@bancroft.ca</strong> email address to activate it.</p>
+          <p>Residents and community workers can join with a personal email and postal code <strong>K0L 1C0</strong>.</p>
+          <input class="claim-input" type="email" placeholder="your@bancroft.ca or personal email">
+          <input class="claim-input" type="text" placeholder="Postal code (residents only)">
+          <button class="claim-btn" onclick="this.textContent='Request sent — we\'ll be in touch'; this.style.background='var(--teal)'">Request early access →</button>
+          <div class="claim-note">hello@smallburg.ca · smallburg.ca · Maynooth, ON K0L 2S0</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Community profile -->
+  <section>
+    <div class="section-label">Community profile</div>
+    <h2>What we already know<br><em>about Bancroft.</em></h2>
+    <p style="color:var(--text-dim); font-size:0.95rem; max-width:580px; margin-bottom:0">This profile was built from public data before anyone from Bancroft signed up. It updates as your community data grows.</p>
+
+    <div class="profile-grid fade-up">
+      <div class="profile-card">
+        <div class="profile-card-tag tag-amber">Economy</div>
+        <h3>Diversified service hub</h3>
+        <p>Healthcare anchored by North Hastings Hospital — the largest employer. Government services, retail, trades and financial services form the core. Tourism and arts are strong seasonal contributors. No single-employer dependency — the town transitioned from mining without collapse.</p>
+      </div>
+      <div class="profile-card">
+        <div class="profile-card-tag tag-teal">Known for</div>
+        <h3>Mineral Capital of Canada</h3>
+        <p>Almost 90% of all mineral types found on earth are located in and around Bancroft. The Rockhound Gemboree — Canada's largest gem and mineral show — has run since 1963 and draws visitors from across North America. World-class geology is not a tourism hook. It is a genuine fact.</p>
+      </div>
+      <div class="profile-card">
+        <div class="profile-card-tag tag-purple">Demographics</div>
+        <h3>Aging, experienced, local</h3>
+        <p>51% of residents are 55 or older. The largest cohort is 65+. 95% Canadian-born. 99% English-speaking. 35% of households are single-person. This is a community with deep local knowledge, significant institutional experience, and a succession challenge on the horizon.</p>
+      </div>
+      <div class="profile-card">
+        <div class="profile-card-tag tag-coral">Vulnerabilities</div>
+        <h3>Gaps worth addressing</h3>
+        <p>Median household income of $57,200 sits below Ontario average. Unemployment at 11.8%. Limited career pathways for young people — outmigration pressure is real. The retiring workforce carries knowledge no system currently captures. Seasonal economy creates winter employment gaps.</p>
+      </div>
+      <div class="profile-card">
+        <div class="profile-card-tag tag-green">Civic</div>
+        <h3>Active and engaged leadership</h3>
+        <p>Mayor Paul Jenkins re-elected 2022, serving since 2018. Town received Strong Mayor powers May 2025 — aligned with provincial housing and infrastructure priorities. Active Community Futures Development Corporation. Loyalist College satellite office. Bancroft This Week local newspaper.</p>
+      </div>
+      <div class="profile-card">
+        <div class="profile-card-tag tag-teal">Region</div>
+        <h3>Hub for seven municipalities</h3>
+        <p>Bancroft serves as the commercial, healthcare, and service hub for North Hastings — a region covering Hastings Highlands, North Hastings, Faraday, Carlow/Mayo, Limerick, Wollaston, and Highlands East. Regional population exceeds 40,000 with seasonal amplification.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Platform modules -->
+  <section>
+    <div class="section-label">Platform modules</div>
+    <h2>Six things this workspace<br><em>is ready to do.</em></h2>
+    <p style="color:var(--text-dim); font-size:0.95rem; max-width:580px; margin-bottom:0">Each module activates independently. Start with one. The rest are waiting.</p>
+
+    <div class="module-grid fade-up">
+
+      <div class="module module-teal">
+        <div class="module-status status-ready">Ready to connect</div>
+        <div class="module-icon">01</div>
+        <h3>TapLog</h3>
+        <div class="module-sub">Built environment</div>
+        <p>Fire safety, fall protection, and regulated trades inspection for every asset in the Town of Bancroft. NFC-tagged, inspection-logged, compliance-tracked. Pre-loss records surface automatically in insurance claims.</p>
+        <button class="module-action">Connect TapLog →</button>
+      </div>
+
+      <div class="module module-amber">
+        <div class="module-status status-dormant">Dormant</div>
+        <div class="module-icon">02</div>
+        <h3>The Commons</h3>
+        <div class="module-sub">Knowledge work marketplace</div>
+        <p>Post local knowledge capture work. Bancroft residents get paid to digitize variance records, verify municipal data, and maintain community datasets. The money stays local. The knowledge stays too.</p>
+        <button class="module-action">Activate Commons →</button>
+      </div>
+
+      <div class="module module-purple">
+        <div class="module-status status-dormant">Dormant</div>
+        <div class="module-icon">03</div>
+        <h3>Muster</h3>
+        <div class="module-sub">Local workforce registry</div>
+        <p>Retired planners. Local tradespeople. Recent graduates who stayed. People who know this community and have had no economic vehicle for that knowledge — until now. Muster is their registry.</p>
+        <button class="module-action">Build your Muster →</button>
+      </div>
+
+      <div class="module module-coral dormant">
+        <div class="module-status status-dormant">Coming soon</div>
+        <div class="module-icon">04</div>
+        <h3>Farpost</h3>
+        <div class="module-sub">Insurance claims dispatch</div>
+        <p>When a claim is filed for a Bancroft property, the adjuster sees the pre-loss TapLog inspection history automatically. Every compliant asset on record. Every open deficiency flagged. The data is already there.</p>
+        <button class="module-action" style="opacity:0.4; cursor:default">Coming soon</button>
+      </div>
+
+      <div class="module module-coral dormant">
+        <div class="module-status status-dormant">Coming soon</div>
+        <div class="module-icon">05</div>
+        <h3>Parcel</h3>
+        <div class="module-sub">Land record dataset</div>
+        <p>Zoning history. Variances. Easements. Environmental constraints. The land record knowledge that lives in Hastings County filing cabinets — digitized, structured, and queryable by civic address.</p>
+        <button class="module-action" style="opacity:0.4; cursor:default">Coming soon</button>
+      </div>
+
+      <div class="module module-gray dormant">
+        <div class="module-status status-dormant">Coming soon</div>
+        <div class="module-icon">06</div>
+        <h3>Ledger</h3>
+        <div class="module-sub">Property compliance history</div>
+        <p>When a property changes hands in Bancroft, the full TapLog and Parcel record transfers with it. The buyer knows what they're getting. The lawyer has something to point to. The history doesn't disappear.</p>
+        <button class="module-action" style="opacity:0.4; cursor:default">Coming soon</button>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Gaps -->
+  <section>
+    <div class="section-label">What Bancroft is starving for</div>
+    <h2>The gaps this platform<br><em>was built to close.</em></h2>
+
+    <div class="gap-list fade-up">
+      <div class="gap-item">
+        <div>
+          <h4>No local career pathway for young people</h4>
+          <p>Youth outmigration is driven by a simple equation: no skilled local work equals leaving. The Commons creates it. Muster structures it. Knowledge work doesn't require a commute.</p>
+        </div>
+        <div class="gap-tag">Commons · Muster</div>
+      </div>
+      <div class="gap-item">
+        <div>
+          <h4>Retiring workforce taking knowledge with them</h4>
+          <p>The planners, clerks, inspectors and trades workers of the past 40 years are leaving. What they know about this community — its land, its buildings, its history — is not in any system. The Commons captures it before it walks out the door.</p>
+        </div>
+        <div class="gap-tag">Commons · Parcel</div>
+      </div>
+      <div class="gap-item">
+        <div>
+          <h4>No verified building compliance record</h4>
+          <p>When something goes wrong in a Bancroft building, there is no verified pre-loss inspection record. TapLog creates it. Every fire extinguisher, every alarm panel, every sprinkler riser — documented, timestamped, tamper-evident.</p>
+        </div>
+        <div class="gap-tag">TapLog</div>
+      </div>
+      <div class="gap-item">
+        <div>
+          <h4>Seasonal employment gap in winter months</h4>
+          <p>Tourism peaks in summer. Commons work is year-round. Digitization, dataset maintenance, and knowledge capture don't stop when the cottagers leave. This is steady local income for a community that needs it.</p>
+        </div>
+        <div class="gap-tag">Commons</div>
+      </div>
+      <div class="gap-item">
+        <div>
+          <h4>Land records fragmented across county systems</h4>
+          <p>Hastings County land use data — variances, zoning changes, easements going back decades — exists in formats that don't talk to each other. Parcel connects them. The Bancroft workspace is where that work begins.</p>
+        </div>
+        <div class="gap-tag">Parcel</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- First tasks -->
+  <section>
+    <div class="section-label">First Commons tasks</div>
+    <h2>Work that exists<br><em>right now.</em></h2>
+    <p style="color:var(--text-dim); font-size:0.95rem; max-width:580px; margin-bottom:0">These tasks are waiting in the Bancroft Commons queue. They pay. They build something real. They stay local.</p>
+
+    <div class="task-list fade-up">
+      <div class="task">
+        <div class="task-num">01</div>
+        <div>
+          <h4>Verify Bancroft municipal email domain and staff directory</h4>
+          <p>Confirm that @bancroft.ca is the active staff email domain. Find and record Mayor, CAO, Clerk, and Economic Development Officer contact information from public sources. Estimated 2–3 hours.</p>
+        </div>
+        <div class="task-role">DIG-GEN</div>
+      </div>
+      <div class="task">
+        <div class="task-num">02</div>
+        <div>
+          <h4>Complete North Hastings municipal registry — 7 surrounding municipalities</h4>
+          <p>Verify email domains, staff contacts, and portal status for Hastings Highlands, North Hastings, Faraday, Carlow/Mayo, Limerick, Wollaston, and Highlands East. Estimated 8–12 hours.</p>
+        </div>
+        <div class="task-role">DIG-GEN</div>
+      </div>
+      <div class="task">
+        <div class="task-num">03</div>
+        <div>
+          <h4>Identify Hastings County land registry contact and data access pathway</h4>
+          <p>Research who holds Hastings County zoning and variance records. What format are they in? What's the access process? Are there filing cabinets involved? This is the Parcel reconnaissance task. Estimated 4–6 hours.</p>
+        </div>
+        <div class="task-role">DIG-LU</div>
+      </div>
+      <div class="task">
+        <div class="task-num">04</div>
+        <div>
+          <h4>Map commercial building stock in downtown Bancroft</h4>
+          <p>Walk the downtown core. Record every commercial building address, visible business type, approximate age. This becomes the seed list for TapLog asset registration — every building that needs a fire safety inspection record. Estimated 3–4 hours.</p>
+        </div>
+        <div class="task-role">DIG-FS</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer CTA -->
+  <section style="border-bottom:none">
+    <div class="section-label">Activate this workspace</div>
+    <h2>Bancroft has been<br><em>waiting for this.</em></h2>
+    <p style="color:var(--text-dim); font-size:0.95rem; max-width:560px; margin-bottom:2rem">This workspace was built before you arrived. The community profile is pre-populated. The Commons queue has work waiting. The modules are ready to activate. All it takes is someone with a @bancroft.ca email address — or a K0L postal code — to claim it.</p>
+    <a href="mailto:hello@smallburg.ca?subject=Bancroft workspace — early access request" style="display:inline-flex; align-items:center; gap:0.5rem; font-family:'DM Mono',monospace; font-size:11px; letter-spacing:0.12em; text-transform:uppercase; color:var(--warm); border:1px solid var(--warm-dim); padding:0.75rem 1.5rem; text-decoration:none; transition:all 0.2s">hello@smallburg.ca →</a>
+  </section>
+
+</div>
+
+<footer>
+  <div class="wrap">
+    <div class="footer-inner">
+      <div class="footer-left">
+        <a href="https://smallburg.ca">smallburg.ca</a> · workspace ws_0003 · Town of Bancroft · K0L 1C0<br>
+        Built in Maynooth, Ontario · <a href="mailto:hello@smallburg.ca">hello@smallburg.ca</a>
+      </div>
+      <div class="footer-right">
+        Small town. Big infrastructure.<br>
+        45.0500° N · 77.8500° W
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.08 });
+  document.querySelectorAll('.fade-up').forEach(el => obs.observe(el));
+</script>
+
+</body>
+</html>
