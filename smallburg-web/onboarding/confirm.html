@@ -67,11 +67,9 @@
     <div class="progress-step active"></div>
     <div class="progress-step"></div>
   </div>
-
   <div class="card">
     <div class="card-label">Confirm your details</div>
     <h1>Set your password.</h1>
-
     <div class="summary" id="summary">
       <div class="summary-row"><span class="summary-key">Email</span><span class="summary-val" id="s-email">—</span></div>
       <div class="summary-row"><span class="summary-key">Name</span><span class="summary-val" id="s-name">—</span></div>
@@ -79,9 +77,7 @@
       <div class="summary-row" id="s-cert-row" style="display:none"><span class="summary-key">Certifications</span><span class="summary-val" id="s-certs">—</span></div>
       <div class="summary-row"><span class="summary-key">Municipalities</span><span class="summary-val" id="s-munis">—</span></div>
     </div>
-
     <div class="error-banner" id="error-banner"></div>
-
     <div class="field">
       <label for="password">Password</label>
       <div class="input-wrap">
@@ -90,7 +86,6 @@
       </div>
       <div class="field-hint">Minimum 8 characters</div>
     </div>
-
     <div class="field">
       <label for="password2">Confirm password</label>
       <div class="input-wrap">
@@ -99,42 +94,30 @@
       </div>
       <div class="field-error" id="pw-mismatch">Passwords don't match.</div>
     </div>
-
     <button class="btn-primary" id="btn-submit" disabled>Create my account →</button>
     <a href="javascript:history.back()" class="back-link">← Back</a>
   </div>
 </main>
-
 <script>
+  const API = 'https://api.smallburg.ca';
   const ROLE_LABELS = { inspector: 'Inspector', municipal_staff: 'Municipal staff', community_member: 'Community member' };
-
   let formData = null;
 
   function init() {
     const raw = sessionStorage.getItem('sb_onboarding');
     if (!raw) { location.href = 'index.html'; return; }
     formData = JSON.parse(raw);
-
     document.getElementById('s-email').textContent = formData.email || '—';
     document.getElementById('s-name').textContent = formData.name || '—';
     document.getElementById('s-role').textContent = ROLE_LABELS[formData.role] || formData.role;
     document.getElementById('s-munis').textContent = (formData.municipalities || []).join(', ') || '—';
-
     if (formData.certifications?.length) {
       const names = { ember: 'Ember', anchor: 'Anchor', hatch: 'Hatch' };
       document.getElementById('s-certs').textContent = formData.certifications.map(c => names[c] || c).join(', ');
       document.getElementById('s-cert-row').style.display = '';
     }
-
-    // Restore email from verify step if stored
-    if (!formData.email && formData.token) {
-      fetch(`const res = await fetch(`https://api.smallburg.ca/api/auth/verify?token=${encodeURIComponent(token)}`);auth/verify?token=${encodeURIComponent(formData.token)}`)
-        .then(r => r.json())
-        .then(d => { document.getElementById('s-email').textContent = d.email || '—'; });
-    }
   }
 
-  // Toggle password visibility
   ['pw1', 'pw2'].forEach((id, i) => {
     const btn = document.getElementById(`toggle-${id}`);
     const inp = document.getElementById(i === 0 ? 'password' : 'password2');
@@ -148,10 +131,8 @@
   function validate() {
     const pw = document.getElementById('password').value;
     const pw2 = document.getElementById('password2').value;
-    const mismatch = document.getElementById('pw-mismatch');
-    const ok = pw.length >= 8 && pw === pw2;
-    mismatch.classList.toggle('visible', pw2.length > 0 && pw !== pw2);
-    document.getElementById('btn-submit').disabled = !ok;
+    document.getElementById('pw-mismatch').classList.toggle('visible', pw2.length > 0 && pw !== pw2);
+    document.getElementById('btn-submit').disabled = !(pw.length >= 8 && pw === pw2);
   }
 
   document.getElementById('password').addEventListener('input', validate);
@@ -169,7 +150,7 @@
     const password = document.getElementById('password').value;
 
     try {
-      const res = await fetch('const res = await fetch(`https://api.smallburg.ca/api/auth/verify?token=${encodeURIComponent(token)}`);auth/register', {
+      const res = await fetch(`${API}/api/auth/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
@@ -182,7 +163,6 @@
           password,
         }),
       });
-
       const data = await res.json();
       if (!res.ok) {
         banner.textContent = data.detail || 'Something went wrong. Please try again.';
@@ -191,7 +171,6 @@
         btn.textContent = 'Create my account →';
         return;
       }
-
       sessionStorage.removeItem('sb_onboarding');
       location.href = 'welcome.html';
     } catch (err) {
